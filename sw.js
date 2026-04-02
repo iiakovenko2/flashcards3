@@ -5,6 +5,7 @@ const assets = [
   './style.css',
   './script.js',
   './manifest.json',
+  './data.json',
   './icon-192.png',
   './icon-512.png'
 ];
