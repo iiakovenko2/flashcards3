@@ -5,14 +5,20 @@
     --text-color: #2c3e50;
 }
 
-body {
-    background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
-    background-attachment: fixed;
-    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-    margin: 0;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
+
+
+.header-container {
+    width: 100%;
+    padding: 40px 20px 20px 20px;
+    text-align: center;
+    background: transparent; /* Keeps your nice body gradient visible */
+}
+.app-title {
+    color: var(--text-color);
+    font-size: 2.5rem;
+    margin: 0 0 15px 0;
+    font-weight: 800;
+    text-shadow: 0 2px 4px rgba(0,0,0,0.05);
 }
 
 .menu-container { 
@@ -40,12 +46,42 @@ body {
 
 .flashcard.flipped .flashcard-inner { transform: rotateY(180deg); }
 
-.front, .back { 
+.front { 
     position: absolute; width: 100%; height: 100%; 
-    backface-visibility: hidden; display: flex; flex-direction: column;
+    backface-visibility: hidden; display:flex; flex-direction: column;
     align-items: center; justify-content: center; padding: 20px; 
     box-sizing: border-box; border-radius: 20px; 
-    box-shadow: 0 10px 20px rgba(0,0,0,0.1); background: white; font-size: 1.3rem; 
+    box-shadow: 0 10px 20px rgba(0,0,0,0.1); background: white; font-size: 1.3rem;
+    
+}
+
+.back {
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    backface-visibility: hidden;
+    background: white;
+    border-radius: 20px;
+    box-shadow: 0 10px 20px rgba(0,0,0,0.1);
+    box-sizing: border-box;
+    padding: 20px;
+    font-size: 1.3rem;
+    /* Use Grid instead of Flex - it is often more stable for centering text */
+    display: grid;
+    place-items: center; 
+    text-align: center;
+}
+
+/* This is the secret: ensure the math stays together */
+.back-content {
+    width: 100%;
+    line-height: 1.8;
+    font-size: 1.3rem;
+}
+
+/* Prevent KaTeX from adding huge invisible margins */
+.back .katex-display {
+    margin: 0.5em 0 !important;
 }
 
 .back { transform: rotateY(180deg); background: #f0f7ff; }
@@ -66,7 +102,31 @@ button {
     font-size: 1rem; margin: 5px; 
 }
 
-.back-btn { background: #666; margin-bottom: 20px; }
+/* A specialized style for the Back Button to replace the gray one */
+.back-btn-styled {
+    background-color: darkslategrey;
+    color: white;
+    border: none;
+    padding: 10px 25px;
+    border-radius: 50px; /* Makes it pill-shaped */
+    font-weight: 600;
+    font-size: 0.95rem;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    box-shadow: 0 4px 15px rgba(74, 144, 226, 0.3);
+    display: inline-flex;
+    align-items: center;
+}
+
+.back-btn-styled:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 20px rgba(74, 144, 226, 0.4);
+    filter: brightness(1.1);
+}
+
+.back-btn-styled:active {
+    transform: scale(0.98);
+}
 
 .jxgbox {
     border: 1px solid #ddd;
@@ -75,25 +135,51 @@ button {
     z-index: 1; /* Ensures it stays inside the card layer */
 }
 
+/* 1. The Dimmed Background */
 .modal {
     display: none; 
     position: fixed; 
     z-index: 1000; 
     left: 0; top: 0;
     width: 100%; height: 100%;
-    background-color: rgba(0,0,0,0.7); /* Dim the background */
-    backdrop-filter: blur(4px); /* Modern frosted glass effect */
+    background-color: rgba(0,0,0,0.7);
+    backdrop-filter: blur(4px);
+    /* Remove overflow and padding from here */
 }
 
+/* 2. The White Box */
 .modal-content {
     background-color: white;
-    margin: 15% auto;
+    margin: 5vh auto; /* 5% from top to give more vertical room */
     padding: 25px;
     border-radius: 12px;
-    width: 80%;
-    max-width: 500px;
+    width: 90%; /* Wider for better graph display */
+    max-width: 600px;
     position: relative;
     box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+    
+    /* THE FIX: Control the height and scrolling here */
+    max-height: 85vh; 
+    overflow-y: auto; 
+}
+
+/* 3. The Scrollbar Styles (Now targeting the box correctly) */
+.modal-content::-webkit-scrollbar {
+    width: 8px;
+}
+
+.modal-content::-webkit-scrollbar-track {
+    background: #f1f1f1;
+    border-radius: 10px;
+}
+
+.modal-content::-webkit-scrollbar-thumb {
+    background: #bdc3c7;
+    border-radius: 10px;
+}
+
+.modal-content::-webkit-scrollbar-thumb:hover {
+    background: #27ae60; /* Your green theme color */
 }
 
 .close-btn {
@@ -177,7 +263,7 @@ button {
     
     /* Dimensions for the "Large Rectangle" */
     width: 220px;           
-    height: 140px;          
+    height: 110px;          
     margin: 10px;
     padding: 15px;
     
@@ -196,8 +282,9 @@ button {
     word-wrap: break-word;
 }
 
+/* Styling the Hint Button */
 .hint-button {
-    background-color: #fef9c3; /* Light yellow */
+    background-color: #fef9c3; /* Soft Yellow */
     border: 1px solid #fde047;
     color: #854d0e;
     padding: 8px 16px;
@@ -205,25 +292,279 @@ button {
     cursor: pointer;
     font-size: 0.9rem;
     font-weight: 600;
-    transition: all 0.2s;
+    transition: all 0.2s ease;
+    display: inline-flex;
+    align-items: center;
 }
 
 .hint-button:hover {
     background-color: #fde047;
-    transform: scale(1.05);
+    transform: translateY(-1px);
 }
 
+/* Styling the Hint Box */
 .hint-text {
     margin-top: 10px;
-    padding: 10px;
+    padding: 12px;
     background-color: #fffbeb;
     border-left: 4px solid #f59e0b;
     font-style: italic;
     font-size: 0.95rem;
     color: #444;
     border-radius: 4px;
+    line-height: 1.5;
 }
 
 .hint-icon {
     margin-right: 5px;
 }
+
+.matching-wrapper { display: flex; gap: 15px; margin: 20px 0; }
+.match-col { flex: 1; }
+.mini-graph-card { width: 100%; height: 120px; background: white; border-radius: 4px; }
+.drag-item.small { background: #073366; color: white; padding: 8px; margin-bottom: 8px; border-radius: 4px; cursor: grab; text-align: center; }
+.drop-zone.card-zone { border: 2px dashed #ccc; padding: 5px; margin-bottom: 10px; border-radius: 8px; }
+.correct-match { border-color: #40ce7c; background: #85ff85; }
+.snap-slot { text-align: center; font-size: 0.8rem; color: #666; padding: 4px; }
+
+/* Ensure the game wrapper takes up the full width of the modal */
+.matching-wrapper {
+    width: 100%;
+    display: block; /* Changes from flex to block so the header stays on top */
+}
+
+/* Style the Draggable Equations */
+#card-draggables .draggable-item {
+    background: #3498db;
+    color: white;
+    padding: 15px;
+    border-radius: 8px;
+    margin-bottom: 15px;
+    text-align: center;
+    cursor: grab;
+    box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+}
+
+/* Style the Drop Targets (Graphs) */
+#card-targets .drop-target {
+    border: 2px dashed #bdc3c7;
+    border-radius: 12px;
+    padding: 10px;
+    margin-bottom: 15px;
+    background: #f9f9f9;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+/* Keep the JSXGraph containers consistent */
+.mini-graph-card {
+    width: 100%; 
+    height: 100;
+    background: #ffffff;
+    border-radius: 4px;
+}
+
+.search-container {
+    width: 100%;
+    max-width: 500px;
+    margin: 20px auto;
+}
+
+#app-search {
+    width: 100%;
+    height: 0;
+    padding: 12px 20px;
+    border-radius: 25px;
+    border: 2px solid #ddd;
+    font-size: 1rem;
+    outline: none;
+    transition: border-color 0.3s;
+}
+
+#app-search:focus {
+    border-color: var(--primary);
+}
+
+/* Styling specifically for search results */
+.search-result-item {
+    width: 100%;
+    max-width: 800px; /* Matches your menu width */
+    height: auto;     /* Let it grow with the text */
+    min-height: 60px;
+    margin: 8px 0;
+    padding: 15px 25px;
+    background: white;
+    border-radius: 12px;
+    border-left: 5px solid var(--primary); /* Nice accent line */
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start; /* Align text to the left */
+    text-align: left;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.search-result-item:hover {
+    transform: translateX(5px);
+    background: #f0f7ff;
+}
+
+.search-category-label {
+    font-size: 0.75rem;
+    text-transform: uppercase;
+    color: var(--primary);
+    font-weight: bold;
+    margin-bottom: 5px;
+}
+
+.search-question-preview {
+    font-size: 1rem;
+    color: var(--text-color);
+    line-height: 1.4;
+}
+
+.back-to-search-btn {
+    background-color: #ea9339;
+    color: white;
+    border: none;
+    padding: 10px 25px;
+    border-radius: 50px; /* Makes it pill-shaped */
+    font-weight: 600;
+    font-size: 0.95rem;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    box-shadow: 0 4px 15px rgba(74, 144, 226, 0.3);
+    display: inline-flex;
+    align-items: center;
+}
+
+.back-to-search-btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 20px rgba(74, 144, 226, 0.4);
+    filter: brightness(1.1);
+}
+
+.back-to-search-btn:active {
+    transform: scale(0.98);
+}
+
+/* 1. Define the Variables for both themes */
+:root {
+    /* LIGHT MODE */
+    --bg-main: #f0f4f8;          /* Page Background */
+    --bg-card: #ffffff;          /* Card & Modal Background */
+    --text-primary: #1e293b;     /* Main Text */
+    --text-secondary: #64748b;   /* Muted Text */
+    --accent: #3498db;           /* Primary Buttons */
+    --accent-hover: #2980b9;
+    --border-color: #656666;
+}
+
+body.dark-mode {
+    /* DARK MODE */
+    --bg-main: #0f172a !important;          /* Deep Navy Background */
+    --bg-card: #1a1c1e;          /* Lighter Navy Cards */
+    --text-primary: #f4f4f4;     /* Off-White Text */
+    --text-secondary: #94a3b8;   /* Muted Grey Text */
+    --accent: #60a5fa;           /* Bright Blue Accent */
+    --accent-hover: #93c5fd;
+    --border-color: #334155;
+}
+
+/* 2. Apply variables to the layout */
+body {
+    background-color: var(--bg-main);
+    color: var(--text-primary);
+    transition: background-color 0.3s ease, color 0.3s ease;
+    margin: 0;
+    padding: 0; 
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+/* Ensure ALL containers use the variable */
+#menu,  .modal-content, .search-result-item, .menu-card, .front, .header-container, #app-search, .back {
+    background-color: var(--bg-card) !important;
+    color: var(--text-secondary);
+    border: 4px solid var(--border-color);
+}
+#task-text-modal, .search-question-preview {
+    background-color: var(--bg-card) !important;
+    color: var(--text-secondary);
+}
+
+/* 3. The Slick Button Styling */
+.theme-switch-btn {
+    position: fixed;
+    top: 20px;
+    right: 20px;
+    width: 45px;
+    height: 45px;
+    border-radius: 50%;
+    border: 2px solid var(--accent);
+    background: var(--bg-card);
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.2rem;
+    box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+    z-index: 1000;
+    transition: all 0.2s;
+}
+
+.theme-switch-btn:hover {
+    transform: scale(1.1);
+}
+
+
+.match-btn.clickable-item {
+    padding: 15px;
+    margin: 10px 0;
+    background: var(--bg-card);
+    border: 2px solid var(--accent);
+    border-radius: 8px;
+    cursor: pointer; /* Makes the mouse turn into a hand */
+    text-align: center;
+    transition: all 0.2s ease;
+    display: block;
+    width: 20%;
+}
+
+/* Styling for the Text Matching buttons */
+/* Styling for the Text Matching buttons */
+.match-btn {
+    padding: 12px;
+    margin-bottom: 8px;
+    border: 2px solid var(--border-color);
+    background: var(--bg-card);
+    border-radius: 8px;
+    cursor: pointer;
+    text-align: center;
+    transition: all 0.2s;
+  
+}
+
+.match-btn.selected {
+    border-color: var(--accent);
+    background-color: rgba(237, 255, 0, 0.29);
+}
+
+.matched-correct {
+    border-color: #2ecc71 !important;
+    background-color: rgba(46, 204, 113, 0.2) !important;
+    cursor: default;
+}
+
+.matched-wrong {
+    border-color: #e74c3c !important;
+    background-color: rgba(231, 76, 60, 0.2) !important;
+}
+
+
+
+
+
