@@ -22,7 +22,16 @@
 </head>
 <body>
       
-    <h1>მათემატიკის ბარათები</h1>
+    <div class="header-container">
+    <h1 class="app-title">მათემატიკის ბარათები</h1>
+    <button id="theme-toggle" class="theme-switch-btn" onclick="toggleTheme()">
+        <span id="theme-icon">🌙</span>
+    </button>
+</div>
+    
+    <div class="search-container">
+    <input type="text" id="app-search" placeholder="მოძებნე საკითხი..." onkeyup="handleSearch()">
+</div>
 
     <div id="menu" class="menu-container">
         
@@ -30,7 +39,8 @@
     </div>
 
     <div id="player">
-        <button class="back-btn" onclick="goHome()">← მთავარი მენიუ</button>
+        <button id="back-to-search-btn" class="back-to-search-btn search-back" onclick="backToSearch()" style="display:none;">← ძიების შედეგები</button>
+        <button class="back-btn-styled" onclick="goHome()">← მთავარი მენიუ</button>
         <h2 id="category-title"></h2>
         
         <div style="text-align: center; margin-bottom: 10px;">
@@ -42,7 +52,6 @@
             <div class="flashcard-inner">
                 <div class="front">
                     <div id="q-text-content"></div>
-                    <img id="q-img" alt="Diagram">
                     <div id="jxgbox" class="jxgbox" style="width: 280px; height: 280px; margin: 10px auto; display: block; background: white;"></div>
                 </div>
                 <div class="back" id="a-text">პასუხი</div>
@@ -65,7 +74,8 @@
         </div>
     </div>
   
-  <div id="task-modal" class="modal">
+  
+ <div id="task-modal" class="modal">
     <div class="modal-content" style="border-top: 5px solid #27ae60;">
         <span class="close-btn" onclick="closeTask()">&times;</span>
         
@@ -74,24 +84,125 @@
         </div>
         <hr>
         
-        <div id="task-text-modal" style="min-height: 80px; margin-top: 15px;"></div>
-        <button id="hint-btn" onclick="toggleHint()" style="display:none;">💡 მინიშნება</button>
-        <div id="task-hint-text" style="display:none; margin-top:10px; font-style:italic;"></div>
-        <div id="task-answer-wrapper" style="margin-top: 20px; border-top: 1px dashed #ccc; padding-top: 15px;">
-            <button id="show-task-answer-btn" onclick="toggleTaskAnswer()" class="ans-btn">პასუხის ნახვა</button>
-            <div id="task-answer-text" style="display:none; margin-top: 10px; font-weight: bold;"></div>
+        <div id="task-main-content">
+            <div id="task-text-modal" style="min-height: 80px; margin-top: 15px;"></div>
+            
+            <div class="task-hint-container" style="margin: 15px 0;">
+              <button id="hint-btn" class="hint-button" onclick="toggleHint()" style="display:none;">
+              <span class="hint-icon">💡</span> მინიშნება
+            </button>
+        <div id="task-hint-text" class="hint-text" style="display:none;"></div>
+    </div>
+            <div id="task-answer-wrapper" style="margin-top: 20px; border-top: 1px dashed #ccc; padding-top: 15px;">
+                <button id="show-task-answer-btn" onclick="toggleTaskAnswer()" class="ans-btn">პასუხის ნახვა</button>
+                <div id="task-answer-text" style="display:none; margin-top: 10px; font-weight: bold;"></div>
+            </div>
         </div>
-        
-
         <div id="task-nav-controls" style="display: flex; justify-content: space-between; margin-top: 25px;">
             <button onclick="changeTask(-1)" class="nav-btn">← წინა</button>
             <button onclick="changeTask(1)" class="nav-btn">შემდეგი →</button>
         </div>
     </div>
-</div>
-    
+</div>   
     
 
     <script src="script.js"></script>
+    <script> 
+function handleSearch() {
+    const query = document.getElementById('app-search').value.toLowerCase();
+    const menuContainer = document.getElementById('menu');
+    const searchBackBtn = document.getElementById('back-to-search-btn'); // Get the button reference
+    
+    // THE FIX: If query is empty (user erased last character), act like GoHome
+    if (query.trim() === "") {
+        // 1. Hide the search-specific back button
+        if (searchBackBtn) searchBackBtn.style.display = "none";
+        
+        // 2. Reset layout to the original grid
+        menuContainer.style.display = "grid";
+        menuContainer.classList.remove('searching');
+        
+        // 3. Rebuild the default category menu
+        createCategoryMenu();
+        return;
+    }
+
+    // Standard search logic continues here...
+    menuContainer.style.display = "flex";
+    menuContainer.style.flexDirection = "column";
+    menuContainer.style.alignItems = "center";
+    menuContainer.classList.add('searching');
+    menuContainer.innerHTML = ""; 
+
+    let resultsFound = false;
+
+    Object.keys(data).forEach(category => {
+        const cards = Array.isArray(data[category]) ? data[category] : data[category].cards;
+        
+        const filtered = cards.filter(card => 
+            card.q.toLowerCase().includes(query) || 
+            (card.help && card.help.toLowerCase().includes(query))
+        );
+
+        if (filtered.length > 0) {
+            resultsFound = true;
+            filtered.forEach(card => {
+                const div = document.createElement('div');
+                div.className = 'search-result-item';
+                
+                // KaTeX preservation: Keep the $ signs
+                let previewText = card.q.slice(0, 150);
+                if (card.q.length > 150) previewText += "...";
+
+                div.innerHTML = `
+                    <span class="search-category-label">${category}</span>
+                    <div class="search-question-preview">${previewText}</div>
+                `;
+                
+                div.onclick = () => {
+                    currentStack = [card];
+                    currentIndex = 0;
+                    
+                    // Show the search back button when entering the player
+                    if (searchBackBtn) searchBackBtn.style.display = 'inline-block';
+                    
+                    startSearchCard(category);
+                };
+                menuContainer.appendChild(div);
+            });
+        }
+    });
+
+    if (!resultsFound) {
+        menuContainer.innerHTML = "<div class='search-result-item'>შედეგი ვერ მოიძებნა...</div>";
+    } else {
+        // Re-render LaTeX for the new results
+        renderMathInElement(menuContainer, {
+            delimiters: [
+                {left: "$$", right: "$$", display: true},
+                {left: "$", right: "$", display: false}
+            ],
+            throwOnError: false
+        });
+    }
+}
+
+function backToSearch() {
+    document.getElementById('player').style.display = 'none';
+    document.getElementById('menu').style.display = 'flex';
+    handleSearch(); 
+}
+
+function startSearchCard(categoryName) {
+    document.getElementById('category-title').innerText = categoryName;
+    document.getElementById('menu').style.display = 'none';
+    document.getElementById('player').style.display = 'block';
+    updateCard();
+}
+
+// Update your goHome to hide the search button
+
+
+    </script>
 </body>
 </html>
