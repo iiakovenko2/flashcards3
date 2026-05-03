@@ -3,18 +3,8 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta name="mobile-web-app-capable" content="yes">
-    <meta name="apple-mobile-web-app-capable" content="yes">
-    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-    <meta name="theme-color" content="#4a90e2">
-
-
-
     <title>მათემატიკის ბარათები</title>
-    <link rel="manifest" href="manifest.json">
-    <link rel="apple-touch-icon" href="icon-192.png">
-    <link rel="stylesheet" href="style.css">
-
+    
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.css">
     <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.js"></script>
     <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/contrib/auto-render.min.js" onload="renderMathInElement(document.body);"></script>
@@ -43,13 +33,30 @@
 
     <div id="player">
         <button id="back-to-search-btn" class="back-to-search-btn search-back" onclick="backToSearch()" style="display:none;">← ძიების შედეგები</button>
-        <button class="back-btn-styled" onclick="goHome()">← მთავარი მენიუ</button>
+        
         <h2 id="category-title"></h2>
         
-        <div style="text-align: center; margin-bottom: 10px;">
-            <button id="help-btn" class="theory-trigger" onclick="openTheory(event)" style="display:none;">💡 თეორიული ცნობა</button>
-            <button id="task-btn" class="task-trigger" onclick="openTask(event)" style="display:none;">📝 გამოცდის ამოცანა</button>
-        </div>
+        <div class="button-row">
+            <button class="home-btn" onclick="goHome()" aria-label="მთავარი მენიუ">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path>
+        <polyline points="9 22 9 12 15 12 15 22"></polyline>
+    </svg>
+</button>
+    <button id="help-btn" class="action-chip theory-btn" onclick="openTheory(event)" style="display:none;">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <circle cx="12" cy="12" r="10"></circle><line x1="12" y1="16" x2="12" y2="12"></line><line x1="12" y1="8" x2="12.01" y2="8"></line>
+        </svg>
+        <span></span>
+    </button>
+
+    <button id="task-btn" class="action-chip task-btn" onclick="openTask(event)" style="display:none;">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline><line x1="16" y1="13" x2="8" y2="13"></line><line x1="16" y1="17" x2="8" y2="17"></line>
+        </svg>
+        <span></span>
+    </button>
+</div>
 
         <div class="flashcard"> 
             <div class="flashcard-inner">
@@ -109,7 +116,7 @@
 </div>   
     
 
-    <script src="script.js?v=1.1"></script>
+    <script src="script.js"></script>
     <script> 
 function handleSearch() {
     const query = document.getElementById('app-search').value.toLowerCase();
