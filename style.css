@@ -3,19 +3,22 @@
     --bg: #f5f7fa;
     --card-bg: #ffffff;
     --text-color: #2c3e50;
+    
 }
 
-
+* {
+    -webkit-tap-highlight-color: transparent;
+}
 
 .header-container {
     width: 100%;
-    padding: 40px 20px 20px 20px;
+    padding: 17px 12px 3px 16px;
     text-align: center;
     background: transparent; /* Keeps your nice body gradient visible */
 }
 .app-title {
     color: var(--text-color);
-    font-size: 2.5rem;
+    font-size: 1.6rem;
     margin: 0 0 15px 0;
     font-weight: 800;
     text-shadow: 0 2px 4px rgba(0,0,0,0.05);
@@ -23,8 +26,14 @@
 
 .menu-container { 
     display: grid; 
-    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); 
-    gap: 20px; width: 100%; max-width: 800px; margin-top: 50px; 
+    /* Changed minmax(200px, 1fr) to 140px so two cards fit on small phones */
+    grid-template-columns: repeat(auto-fit, minmax(140px, 1fr)); 
+    gap: 15px; 
+    width: 80%; /* Use 95% instead of a fixed max-width to allow breathing room */
+    max-width: 800px; 
+    margin:15px auto auto ; 
+    padding: 15px;
+    border: 15px;
 }
 
 .category-card { 
@@ -35,9 +44,17 @@
 
 .category-card:hover { transform: translateY(-5px); border-color: var(--primary); }
 
-#player { display: none; width: 100%; max-width: 500px; text-align: center; }
+#player { 
+    display: none; 
+    width: 80%; 
+    max-width: 500px; 
+    text-align: center; }
 
-.flashcard { perspective: 1000px; width: 100%; height: 350px; cursor: pointer; margin-bottom: 20px; }
+.flashcard { perspective: 1000px; 
+     width: 100%; 
+     height: 334px; 
+     cursor: pointer; 
+     margin-bottom: 7px; }
 
 .flashcard-inner { 
     position: relative; width: 100%; height: 100%; 
@@ -47,6 +64,7 @@
 .flashcard.flipped .flashcard-inner { transform: rotateY(180deg); }
 
 .front { 
+    
     position: absolute; width: 100%; height: 100%; 
     backface-visibility: hidden; display:flex; flex-direction: column;
     align-items: center; justify-content: center; padding: 20px; 
@@ -56,6 +74,7 @@
 }
 
 .back {
+    
     position: absolute;
     width: 100%;
     height: 100%;
@@ -103,29 +122,35 @@ button {
 }
 
 /* A specialized style for the Back Button to replace the gray one */
-.back-btn-styled {
-    background-color: darkslategrey;
-    color: white;
-    border: none;
-    padding: 10px 25px;
-    border-radius: 50px; /* Makes it pill-shaped */
-    font-weight: 600;
-    font-size: 0.95rem;
-    cursor: pointer;
-    transition: all 0.3s ease;
-    box-shadow: 0 4px 15px rgba(74, 144, 226, 0.3);
-    display: inline-flex;
+.home-btn {
+    background: var(--bg-card); /* Matches your card background */
+    border: 1px solid var(--border-color);
+    color: var(--text-primary);
+    width: 45px;      /* Consistent, touch-friendly size */
+    height: 45px;     /* Consistent, touch-friendly size */
+    border-radius: 50%; /* Perfect circle */
+    display: flex;
     align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: transform 0.2s, background 0.2s;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+    
+    
+    /* Placement */
+    margin: 5px;
+    padding: 0;
+    
 }
 
-.back-btn-styled:hover {
-    transform: translateY(-2px);
-    box-shadow: 0 6px 20px rgba(74, 144, 226, 0.4);
-    filter: brightness(1.1);
+.home-btn:hover {
+    transform: scale(1.1);
+    background: #e2e8f0; /* Slight hover effect */
 }
 
-.back-btn-styled:active {
-    transform: scale(0.98);
+.home-btn svg {
+    width: 23px;
+    height: 27px;
 }
 
 .jxgbox {
@@ -144,6 +169,7 @@ button {
     width: 100%; height: 100%;
     background-color: rgba(0,0,0,0.7);
     backdrop-filter: blur(4px);
+    
     /* Remove overflow and padding from here */
 }
 
@@ -153,7 +179,7 @@ button {
     margin: 5vh auto; /* 5% from top to give more vertical room */
     padding: 25px;
     border-radius: 12px;
-    width: 90%; /* Wider for better graph display */
+    width: 70%; /* Wider for better graph display */
     max-width: 600px;
     position: relative;
     box-shadow: 0 10px 30px rgba(0,0,0,0.3);
@@ -233,6 +259,7 @@ button {
     line-height: 1.6;
     color: #2c3e50;
     padding: 10px 0;
+    
 }
 
 .nav-btn {
@@ -261,20 +288,24 @@ button {
     justify-content: center;
     text-align: center;
     
-    /* Dimensions for the "Large Rectangle" */
-    width: 220px;           
-    height: 110px;          
-    margin: 10px;
+    
+    /* REMOVED fixed width and height */
+    width: 100%; 
+    min-height: 120px; 
     padding: 15px;
     
     /* Visuals */
-    color:black;
-    background-color: white;
-    font-size: 1.4rem; /* Adjust this so the emoji and text look balanced */
+    color: var(--text-secondary);
+    background-color: var(--bg-card);
     font-weight: bold;
-    border-radius: 12px;
+    border-radius: 35px;
     cursor: pointer;
     transition: all 0.2s ease;
+    /* Ensure borders don't add to width */
+    box-sizing: border-box; 
+    border: 1px solid var(--border-color);
+    font-size: 80%;
+    
 }
 
 .card-content {
@@ -366,20 +397,20 @@ button {
 }
 
 .search-container {
-    width: 100%;
-    max-width: 500px;
-    margin: 20px auto;
+    width: 90%;           /* Use 90% so it doesn't touch the edges of the phone screen */
+    max-width: 500px;     /* Keeps it looking good on tablets/desktops */
+    margin: 20px auto;    /* Centers the container horizontally */
+    box-sizing: border-box; 
 }
 
 #app-search {
-    width: 100%;
-    height: 0;
-    padding: 12px 20px;
+    width: 100%;          /* Fills the container, but not the whole screen */
+    padding: 8px 20px;   /* Your padding */
     border-radius: 25px;
     border: 2px solid #ddd;
-    font-size: 1rem;
     outline: none;
-    transition: border-color 0.3s;
+    box-sizing: border-box; /* CRITICAL: This forces the padding to be inside the 100% width */
+    display: block;
 }
 
 #app-search:focus {
@@ -460,6 +491,7 @@ button {
     --accent: #3498db;           /* Primary Buttons */
     --accent-hover: #2980b9;
     --border-color: #656666;
+    
 }
 
 body.dark-mode {
@@ -483,13 +515,14 @@ body {
     display: flex;
     flex-direction: column;
     align-items: center;
+    overflow-x: hidden;
 }
 
 /* Ensure ALL containers use the variable */
 #menu,  .modal-content, .search-result-item, .menu-card, .front, .header-container, #app-search, .back {
     background-color: var(--bg-card) !important;
     color: var(--text-secondary);
-    border: 4px solid var(--border-color);
+    border: 1px solid var(--border-color);
 }
 #task-text-modal, .search-question-preview {
     background-color: var(--bg-card) !important;
@@ -545,7 +578,6 @@ body {
     cursor: pointer;
     text-align: center;
     transition: all 0.2s;
-  
 }
 
 .match-btn.selected {
@@ -564,7 +596,56 @@ body {
     background-color: rgba(231, 76, 60, 0.2) !important;
 }
 
+/* The "Parent" Style (Shared by all buttons) */
+.action-chip {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 10px 20px;
+    border-radius: 50px;
+    border: 2px solid var(--border-color);
+    background: var(--bg-card);
+    color: var(--text-primary);
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    font-size: 0.9rem;
+    margin: 5px; /* Adds space if they stack on very small screens */
+}
 
+.action-chip svg {
+    width: 18px;
+    height: 18px;
+}
 
+/* Modifier: Theory Button (Blue) */
+.theory-btn {
+    border-color: #4a90e2;
+    color: #4a90e2;
+}
+
+.theory-btn:hover {
+    background: #eff6ff;
+}
+
+/* Modifier: Task Button (Green) */
+.task-btn {
+    border-color: #27ae60;
+    color: #27ae60;
+}
+
+.task-btn:hover {
+    background: #f0fdf4;
+}
+
+/* Universal Hover/Active Effects */
+.action-chip:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+}
+
+.action-chip:active {
+    transform: scale(0.95);
+}
 
 
