@@ -1,0 +1,680 @@
+/* Universal Resets */
+* {
+    -webkit-tap-highlight-color: transparent;
+    box-sizing: border-box; /* Ensures padding doesn't break element sizes */
+}
+
+/* 1. Define Variables for Both Themes */
+:root {
+    /* LIGHT MODE */
+    --bg-main: #f0f4f8;          /* Page Background */
+    --bg-card: #ffffff;          /* Card & Modal Background */
+    --text-primary: #1e293b;     /* Main Text */
+    --text-secondary: #64748b;   /* Muted Text */
+    --accent: #3498db;           /* Primary Buttons */
+    --accent-hover: #2980b9;
+    --border-color: #656666;
+    --card-bg: #ffffff;          /* Added fallback matching variable */
+    --primary: #3498db;          /* Added fallback matching variable */
+}
+
+body.dark-mode {
+    /* DARK MODE */
+    --bg-main: #0f172a !important;   /* Deep Navy Background */
+    --bg-card: #1a1c1e;              /* Lighter Navy Cards */
+    --text-primary: #f4f4f4;         /* Off-White Text */
+    --text-secondary: #94a3b8;       /* Muted Grey Text */
+    --accent: #60a5fa;               /* Bright Blue Accent */
+    --accent-hover: #93c5fd;
+    --border-color: #334155;
+    --card-bg: #1a1c1e;
+    --primary: #60a5fa;
+}
+
+/* 2. Global Layout and Structural Anchors */
+body {
+    background-color: var(--bg-main);
+    color: var(--text-primary);
+    transition: background-color 0.3s ease, color 0.3s ease;
+    margin: 0;
+    padding: 0; 
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    overflow-x: hidden;
+}
+
+/* Container Foundations */
+.header-container {
+    width: 100%;
+    padding: 17px 12px 3px 16px;
+    text-align: center;
+    background: transparent;
+}
+
+.app-title {
+    color: var(--text-primary);
+    font-size: 1.6rem;
+    margin: 0 0 15px 0;
+    font-weight: 800;
+    text-shadow: 0 2px 4px rgba(0,0,0,0.05);
+}
+
+.menu-container { 
+    display: grid; 
+    grid-template-columns: repeat(auto-fit, minmax(140px, 1fr)); 
+    gap: 15px; 
+    width: 95%; /* Expanded to allow breathing room on small screens */
+    max-width: 800px; 
+    margin: 15px auto; 
+    padding: 15px;
+}
+
+/* Category Grid Item Styling */
+.category-card { 
+    background: var(--card-bg); 
+    padding: 30px; 
+    border-radius: 15px; 
+    text-align: center; 
+    cursor: pointer; 
+    box-shadow: 0 4px 6px rgba(0,0,0,0.1); 
+    transition: transform 0.2s, border-color 0.2s; 
+    border: 2px solid transparent; 
+}
+
+.category-card:hover { 
+    transform: translateY(-5px); 
+    border-color: var(--primary); 
+}
+
+.menu-card {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    width: 100%; 
+    min-height: 120px; 
+    padding: 15px;
+    color: var(--text-secondary);
+    background-color: var(--bg-card);
+    font-weight: bold;
+    border-radius: 35px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    border: 1px solid var(--border-color);
+    font-size: 90%;
+}
+
+.card-content {
+    line-height: 1.4;
+    word-wrap: break-word;
+}
+
+/* 3. Core Flashcard Structure */
+#player { 
+    display: none; 
+    width: 90%; 
+    max-width: 500px; 
+    text-align: center; 
+}
+
+.flashcard { 
+    perspective: 1000px; 
+    width: 100%; 
+    height: 334px; 
+    cursor: pointer; 
+    margin-bottom: 7px; 
+}
+
+.flashcard-inner { 
+    position: relative; 
+    width: 100%; 
+    height: 100%; 
+    transition: transform 0.6s; 
+    transform-style: preserve-3d; 
+}
+
+.flashcard.flipped .flashcard-inner { 
+    transform: rotateY(180deg); 
+}
+
+/* Note: Removed !important dependency to fix the dynamic front/back color overrides */
+#menu, .modal-content, .search-result-item, .front, #app-search {
+    background-color: var(--bg-card);
+    color: var(--text-secondary);
+    border: 1px solid var(--border-color);
+}
+
+.front, .back { 
+    position: absolute; 
+    width: 100%; 
+    height: 100%; 
+    backface-visibility: hidden; 
+    border-radius: 20px; 
+    box-shadow: 0 10px 20px rgba(0,0,0,0.1); 
+    padding: 20px; 
+    font-size: 1.3rem;
+    border: 1px solid var(--border-color);
+}
+
+.front { 
+    display: flex; 
+    flex-direction: column;
+    align-items: center; 
+    justify-content: center; 
+    background-color: var(--bg-card);
+}
+
+.back { 
+    display: grid;
+    place-items: center; 
+    text-align: center;
+    transform: rotateY(180deg); 
+    background-color: #f0f7ff; /* Fallback for light mode */
+}
+
+/* Applies an dark-academia accent overlay tint inside dark mode */
+body.dark-mode .back {
+    background-color: #1e2538; 
+}
+
+.back-content {
+    width: 100%;
+    line-height: 1.8;
+    font-size: 1.3rem;
+}
+
+/* Prevent KaTeX formatting issues */
+.back .katex-display {
+    margin: 0.5em 0 !important;
+}
+
+/* Media handling */
+#q-img { 
+    display: none; 
+    max-width: 90%; 
+    max-height: 180px; 
+    margin-top: 15px; 
+    border-radius: 8px; 
+    object-fit: contain;
+}
+
+img {
+    position: relative;
+    width: 70%;
+    border: 3px groove var(--border-color); /* Added explicit sizing value */
+    border-radius: 20px;
+}
+
+/* 4. Global Interactive Buttons */
+button { 
+    position: relative;
+    padding: 7px 18px;
+    font-size: 18px;
+    font-weight: 428;
+    color: var(--primary);
+    background: rgba(255, 255, 255, 0.1); 
+    border: 1px solid rgba(255, 255, 255, 0.2); 
+    border-radius: 50px; 
+    backdrop-filter: blur(10px); 
+    -webkit-backdrop-filter: blur(10px); 
+    cursor: pointer;
+    transition: all 0.3s ease;
+    overflow: hidden;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+}
+
+button:hover {
+    background: rgba(255, 255, 255, 0.2);
+    transform: translateY(-3px);
+    box-shadow: 0 8px 25px rgba(0, 0, 0, 0.3);
+}
+
+button::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(120deg, transparent, rgba(255, 255, 255, 0.3), transparent);
+    transition: 0.5s;
+}
+
+button:hover::before {
+    left: 100%;
+}
+
+/* Navigation Dashboard Links */
+.home-btn {
+    background: var(--bg-card);
+    border: 1px solid var(--border-color);
+    color: var(--text-primary);
+    width: 46px;      
+    height: 45px;     
+    border-radius: 50%; 
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: transform 0.2s, background-color 0.2s;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+    margin: 5px;
+    padding: 0;
+}
+
+.home-btn:hover {
+    transform: scale(1.1);
+    background-color: #e2e8f0;
+}
+
+body.dark-mode .home-btn:hover {
+    background-color: #334155;
+}
+
+.home-btn svg {
+    width: 23px;
+    height: 27px;
+}
+
+/* 5. Graph Engine Components */
+.jxgbox {
+    border: 1px solid #ddd;
+    background-color: #ffffff;
+    box-shadow: inset 0 0 5px rgba(0,0,0,0.1);
+    z-index: 1; 
+}
+
+/* 6. Modals & Pop-up Frameworks */
+.modal {
+    display: none; 
+    position: fixed; 
+    z-index: 1000; 
+    left: 0; top: 0;
+    width: 100%; height: 100%;
+    background-color: rgba(0,0,0,0.7);
+    backdrop-filter: blur(4px);
+}
+
+.modal-content {
+    margin: 5vh auto; 
+    padding: 25px;
+    border-radius: 12px;
+    width: 85%; /* Slightly expanded to look nice on tablets */
+    max-width: 600px;
+    position: relative;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+    max-height: 85vh; 
+    overflow-y: auto; 
+}
+
+/* Scrollbar Interface Customization */
+.modal-content::-webkit-scrollbar { width: 8px; }
+.modal-content::-webkit-scrollbar-track { background: #f1f1f1; border-radius: 10px; }
+.modal-content::-webkit-scrollbar-thumb { background: #bdc3c7; border-radius: 10px; }
+.modal-content::-webkit-scrollbar-thumb:hover { background: #27ae60; }
+
+.close-btn {
+    position: absolute;
+    right: 15px; top: 10px;
+    font-size: 28px;
+    cursor: pointer;
+    color: #888;
+}
+
+.button-row {
+    display: flex;
+    justify-content: center;
+    gap: 15px;
+    margin-bottom: 20px;
+}
+
+/* Chip Modules */
+.action-chip {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 10px 20px;
+    border-radius: 50px;
+    border: 2px solid var(--border-color);
+    background: var(--bg-card);
+    color: var(--text-primary);
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    font-size: 0.9rem;
+    margin: 5px; 
+}
+
+.action-chip svg { width: 18px; height: 18px; }
+.theory-btn { border-color: #4a90e2; color: #4a90e2; }
+.theory-btn:hover { background: #eff6ff; }
+.task-btn { border-color: #27ae60; color: #27ae60; }
+.task-btn:hover { background: #f0fdf4; }
+
+.action-chip:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+}
+.action-chip:active { transform: scale(0.95); }
+
+#task-text-modal, .search-question-preview {
+    background-color: var(--bg-card) !important;
+    color: var(--text-primary); /* Adjusted from secondary for high contrast readability */
+}
+
+.nav-btn {
+    background: black;
+    border: 1px solid #ccc;
+    padding: 8px 15px;
+    border-radius: 8px;
+    cursor: pointer;
+    font-size: 0.9rem;
+    color: white;
+}
+.nav-btn:hover { background: grey; }
+
+.ans-btn {
+    background: #27ae60;
+    color: white;
+    border: none;
+    padding: 8px 15px;
+    border-radius: 5px;
+    cursor: pointer;
+    width: 100%; 
+}
+
+/* 7. Practice Task Hints */
+.hint-button {
+    background-color: #fef9c3; 
+    border: 1px solid #fde047;
+    color: #854d0e;
+    padding: 8px 16px;
+    border-radius: 20px;
+    cursor: pointer;
+    font-size: 0.9rem;
+    font-weight: 600;
+    transition: all 0.2s ease;
+    display: inline-flex;
+    align-items: center;
+}
+.hint-button:hover {
+    background-color: #fde047;
+    transform: translateY(-1px);
+}
+
+.hint-text {
+    margin-top: 10px;
+    padding: 12px;
+    background-color: #fffbeb;
+    border-left: 4px solid #f59e0b;
+    font-style: italic;
+    font-size: 0.95rem;
+    color: #444;
+    border-radius: 4px;
+    line-height: 1.5;
+}
+.hint-icon { margin-right: 5px; }
+
+/* 8. Interactive Game Subsystem (Drag & Drop Matching) */
+.matching-wrapper { width: 100%; display: block; margin: 20px 0; }
+.match-col { flex: 1; }
+
+.mini-graph-card { 
+    width: 100%; 
+    height: 120px; /* Restored broken unit */
+    background: white; 
+    border-radius: 4px; 
+}
+
+.drag-item.small { 
+    background: #073366; 
+    color: white; 
+    padding: 8px; 
+    margin-bottom: 8px; 
+    border-radius: 4px; 
+    cursor: grab; 
+    text-align: center; 
+}
+
+.drop-zone.card-zone { 
+    border: 2px dashed #ccc; 
+    padding: 5px; 
+    margin-bottom: 10px; 
+    border-radius: 8px; 
+}
+
+.correct-match { border-color: #40ce7c; background: #85ff85; }
+.snap-slot { text-align: center; font-size: 0.8rem; color: #666; padding: 4px; }
+
+#card-draggables .draggable-item {
+    background: #3498db;
+    color: white;
+    padding: 15px;
+    border-radius: 8px;
+    margin-bottom: 15px;
+    text-align: center;
+    cursor: grab;
+    box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+}
+
+#card-targets .drop-target {
+    border: 2px dashed #bdc3c7;
+    border-radius: 12px;
+    padding: 10px;
+    margin-bottom: 15px;
+    background: #f9f9f9;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+/* Linear Interactive Text Match Blocks */
+.match-btn.clickable-item {
+    padding: 15px;
+    margin: 10px 0;
+    background: var(--bg-card);
+    border: 2px solid var(--accent);
+    border-radius: 8px;
+    cursor: pointer;
+    text-align: center;
+    transition: all 0.2s ease;
+    display: block;
+    width: 100%; /* Changed from 20% to prevent crushing text on iPad/mobile layout bounds */
+}
+
+.match-btn {
+    padding: 12px;
+    margin-bottom: 8px;
+    border: 2px solid var(--border-color);
+    background: var(--bg-card);
+    border-radius: 8px;
+    cursor: pointer;
+    text-align: center;
+    transition: all 0.2s;
+    color: var(--text-primary);
+}
+
+.match-btn.selected {
+    border-color: var(--accent);
+    background-color: rgba(237, 255, 0, 0.15); /* Reduced intensity slightly for clean contrast */
+}
+
+.matched-correct {
+    border-color: #2ecc71 !important;
+    background-color: rgba(46, 204, 113, 0.2) !important;
+    cursor: default;
+    color: var(--text-primary) !important;
+}
+
+.matched-wrong {
+    border-color: #e74c3c !important;
+    background-color: rgba(231, 76, 60, 0.2) !important;
+    color: var(--text-primary) !important;
+}
+
+/* 9. Search Bar Engine Layout */
+.search-container {
+    width: 90%;          
+    max-width: 500px;    
+    margin: 20px auto;   
+}
+
+#app-search {
+    width: 100%;          
+    padding: 8px 20px;   
+    border-radius: 25px;
+    outline: none;
+    display: block;
+}
+
+#app-search:focus { border-color: var(--primary); }
+
+.search-result-item {
+    width: 100%;
+    max-width: 800px; 
+    height: auto;     
+    min-height: 60px;
+    margin: 8px 0;
+    padding: 15px 25px;
+    border-radius: 12px;
+    border-left: 5px solid var(--primary); 
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start; 
+    text-align: left;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.search-result-item:hover {
+    transform: translateX(5px);
+    background-color: rgba(74, 144, 226, 0.08);
+}
+
+.search-category-label {
+    font-size: 0.75rem;
+    text-transform: uppercase;
+    color: var(--primary);
+    font-weight: bold;
+    margin-bottom: 5px;
+}
+
+/* 10. Multiple Choice Option Buttons */
+.option-btn {
+    width: 100%;
+    text-align: left;
+    padding: 14px 18px;
+    background-color: var(--bg-card);
+    color: var(--text-primary);
+    border: 2px solid var(--border-color);
+    border-radius: 12px;
+    font-size: 1rem;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.option-btn:hover:not(:disabled) {
+    background-color: rgba(74, 144, 226, 0.1);
+    border-color: #4a90e2;
+}
+
+.option-btn.correct {
+    background-color: #27ae60 !important;
+    border-color: #219653 !important;
+    color: white !important;
+    font-weight: bold;
+    box-shadow: 0 4px 12px rgba(39, 174, 96, 0.2);
+}
+
+.option-btn.wrong {
+    background-color: #eb5757 !important;
+    border-color: #c53030 !important;
+    color: white !important;
+    box-shadow: 0 4px 12px rgba(235, 87, 87, 0.2);
+}
+
+.option-btn:disabled:not(.correct):not(.wrong) {
+    opacity: 0.5;
+    cursor: not-allowed;
+    background-color: var(--border-color);
+}
+
+/* 11. Glassmorphic Theme Slider Track */
+.theme-slider-container {
+    position: relative;
+    display: flex;
+    align-items: center;
+    width: 130px;
+    height: 38px;
+    background: linear-gradient(135deg, rgba(224, 196, 232, 0.4), rgba(198, 213, 236, 0.4));
+    border: 1px solid var(--border-color);
+    border-radius: 20px;
+    padding: 3px;
+    box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.05);
+}
+
+[data-theme="dark"] .theme-slider-container {
+    background: linear-gradient(135deg, rgba(46, 32, 66, 0.6), rgba(21, 32, 54, 0.6));
+    border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.theme-slider-thumb {
+    position: absolute;
+    top: 2px;
+    left: 2px;
+    width: 38px;
+    height: 32px;
+    background: rgba(255, 255, 255, 0.6);
+    backdrop-filter: blur(8px);
+    -webkit-backdrop-filter: blur(8px);
+    border-radius: 16px;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1), 
+                inset 0 1px 0 rgba(255, 255, 255, 0.4);
+    transition: left 0.3s cubic-bezier(0.25, 1, 0.5, 1);
+    z-index: 1;
+    border: 0.5px solid rgba(255, 255, 255, 0.6);
+}
+
+[data-theme="dark"] .theme-slider-thumb {
+    background: rgba(255, 255, 255, 0.15);
+    border: 0.5px solid rgba(255, 255, 255, 0.2);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+}
+
+.theme-slider-node {
+    flex: 1;
+    height: 100%;
+    background: none;
+    border: none;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    z-index: 2;
+    color: var(--text-primary);
+    opacity: 0.6;
+    transition: opacity 0.2s ease, color 0.2s ease;
+    padding: 0;
+}
+
+.theme-slider-node.active {
+    opacity: 1;
+    color: #2c3e50;
+    font-weight: bold;
+}
+
+[data-theme="dark"] .theme-slider-node.active {
+    color: #ffffff;
+}
+
+/* Fallback Header Selector Rule override compatibility */
+#category-title {
+    color: var(--text-primary);
+    background: var(--bg-card);
+    border:solid 1px;
+    border-radius: 32px;
+    box-shadow:var(--bg-card)
+}
