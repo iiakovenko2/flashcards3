@@ -1,4 +1,0 @@
-# This file is used internally by FFMPEG.
-file 'file:/Users/imedaiakovenko/Desktop/PY4E/Flashcards/flashcards2/media/videos/test/1080p60/partial_movie_files/FlashcardScene/3544663784_921985251_223132457.mp4'
-file 'file:/Users/imedaiakovenko/Desktop/PY4E/Flashcards/flashcards2/media/videos/test/1080p60/partial_movie_files/FlashcardScene/260329756_1829839803_269446933.mp4'
-file 'file:/Users/imedaiakovenko/Desktop/PY4E/Flashcards/flashcards2/media/videos/test/1080p60/partial_movie_files/FlashcardScene/260329756_2872842549_422369579.mp4'
