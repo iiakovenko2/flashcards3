@@ -92,6 +92,40 @@ async function loadData() {
         data = await response.json();
         console.log("Data loaded successfully:", data);
         
+        // ---------------------------------------------------------
+        // 📊 STATS COUNTER LOGIC (ADDED HERE)
+        // ---------------------------------------------------------
+        let totalFlashcards = 0;
+        let totalMCQs = 0;
+
+        // Loop through every category key inside your loaded data object
+        for (let category in data) {
+            data[category].forEach(card => {
+                // Count the parent card as a flashcard
+                totalFlashcards++;
+
+                // If sub-tasks exist, look inside them
+                if (card.tasks && card.tasks.length > 0) {
+                    card.tasks.forEach(task => {
+                        if (task.options && task.options.length > 0) {
+                            totalMCQs++; // It has options, it's an MCQ
+                        } else {
+                            totalFlashcards++; // No options, it's a flashcard task
+                        }
+                    });
+                }
+            });
+        }
+
+        let grandTotal = totalFlashcards + totalMCQs;
+
+        // Display the calculated stats in your HTML placeholder element
+        const statEl = document.getElementById('stat-counter');
+        if (statEl) {
+            statEl.innerHTML = `სულ: ${grandTotal} | 🗂️ ფლეშბარათი: ${totalFlashcards} | 📝 არჩევითი: ${totalMCQs}`;
+        }
+        // ---------------------------------------------------------
+        
         // Build the menu buttons based on the JSON keys
         createCategoryMenu();
         
