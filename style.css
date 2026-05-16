@@ -678,3 +678,13 @@ body.dark-mode .home-btn:hover {
     border-radius: 32px;
     box-shadow:var(--bg-card)
 }
+
+.stats-container {
+    
+    font-size: 0.9rem;
+    color: var(--text-muted); /* A softer gray instead of bright white/black */
+    display: flex;
+    justify-content: center;
+    gap: 15px;
+    margin: 10px 0;
+}

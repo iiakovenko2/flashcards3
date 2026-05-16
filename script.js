@@ -122,7 +122,7 @@ async function loadData() {
         // Display the calculated stats in your HTML placeholder element
         const statEl = document.getElementById('stat-counter');
         if (statEl) {
-            statEl.innerHTML = `სულ: ${grandTotal} | 🗂️ ფლეშბარათი: ${totalFlashcards} | 📝 არჩევითი: ${totalMCQs}`;
+            statEl.innerHTML = `სულ: ${grandTotal} | 🗂️ ბარათი: ${totalFlashcards} | 📝 ამოცანა: ${totalMCQs}`;
         }
         // ---------------------------------------------------------
         
