@@ -75,7 +75,56 @@ let currentIndex = 0;
 let board = null;
 let currentTaskIndex = 0;
 
+// 📦 Initialize or grab saved bookmarks from browser cache memory
+let bookmarkedCards = JSON.parse(localStorage.getItem('math_bookmarks')) || [];
 
+// 🔄 Updates the visual state of the star button based on current card save status
+function updateBookmarkUI() {
+    if (!currentStack || currentStack.length === 0) return;
+    
+    const currentCard = currentStack[currentIndex];
+    const starSvg = document.getElementById('bookmark-star-svg');
+    
+    if (!starSvg) return;
+    
+    const isSaved = bookmarkedCards.some(card => card.q === currentCard.q);
+    
+    if (isSaved) {
+        starSvg.setAttribute('fill', '#f59e0b');   // Gold fill
+        starSvg.style.stroke = '#f59e0b';          // Gold outline
+    } else {
+        starSvg.setAttribute('fill', 'none');       // Empty fill
+        starSvg.style.stroke = '#2c3e50';          // Return to default dark outline
+    }
+}
+
+// ⭐️ Toggles adding/removing cards when the user clicks the bookmark button chip
+function toggleCurrentBookmark(event) {
+    if (event) event.stopPropagation(); // Stops card from flipping over accidentally
+    if (!currentStack || currentStack.length === 0) return;
+    
+    const currentCard = currentStack[currentIndex];
+    const cardIndex = bookmarkedCards.findIndex(card => card.q === currentCard.q);
+    
+    if (cardIndex > -1) {
+        // Already exists? Remove it!
+        bookmarkedCards.splice(cardIndex, 1);
+    } else {
+        // New card? Clone it cleanly alongside its structural properties
+        const savedItem = {
+            q: currentCard.q,
+            a: currentCard.a,
+            help: currentCard.help || "",
+            tasks: currentCard.tasks || null,
+            jxg: currentCard.jxg || null
+        };
+        bookmarkedCards.push(savedItem);
+    }
+    
+    // Save updated array list straight back into localStorage memory cache
+    localStorage.setItem('math_bookmarks', JSON.stringify(bookmarkedCards));
+    updateBookmarkUI();
+}
 
 
 /**
@@ -206,7 +255,7 @@ function updateCard() {
   
     closeTask();
     closeTheory();
-
+    updateBookmarkUI();
     // 1. IMMEDIATELY reset the flip state so the animation starts
     if (flashcard) {
         flashcard.classList.remove('flipped');
@@ -284,6 +333,7 @@ function updateCard() {
     // Progress text (can stay outside the timeout as it's not on the card face)
     const progressEl = document.getElementById('progress');
     if (progressEl) progressEl.innerText = `${currentIndex + 1} / ${currentStack.length}`;
+    
 }
 
 // 4. THEORY MODAL FUNCTIONS
@@ -1010,14 +1060,46 @@ function toggleSidebar(isOpen) {
  * Handles actions initiated from the sidebar links
  * @param {string} action 
  */
-function handleSidebarAction(action) {
-    toggleSidebar(false); // Close drawer
+// Inside your existing handleSidebarAction block frame:
+function handleSidebarAction(actionType) {
+    toggleSidebar(false); // Closes the left menu panel drawer overlay slider
     
-    if (action === 'test') {
-        startRandomTest(10); // Run mixed test engine
+    if (actionType === 'test') {
+        // Your existing test running loop functions...
+    } 
+    // 🎯 ADD THIS NEW CASE BLOCK DIRECTLY BELOW IT:
+    else if (actionType === 'bookmarks') {
+    if (bookmarkedCards.length === 0) {
+        // 🔄 Replaced the standard alert with your custom Georgian modal
+        showAppAlert("სანიშნეების სია ცარიელია! მონიშნეთ ბარათები ვარსკვლავით.");
+        return;
+    }  
+        // Feed the saved bookmarks array directly into the player carousel frame
+        currentStack = [...bookmarkedCards];
+        currentIndex = 0;
+        
+        // Hide primary grid selection dashboard panel views, bring active carousel viewport player forward
+        document.getElementById('menu').style.display = 'none';
+        document.getElementById('player').style.display = 'block';
+        if (document.getElementById('test-player')) document.getElementById('test-player').style.display = 'none';
+        
+        // Force the headline context title to update cleanly
+        document.getElementById('category-title').innerText = "⭐ ჩემი სანიშნეები";
+        
+        // Redraw and render the card UI canvas
+        updateCard();
     }
 }
+// Open the custom alert modal with custom text
+function showAppAlert(message) {
+    document.getElementById('app-alert-text').innerText = message;
+    document.getElementById('app-alert-modal').style.display = 'flex';
+}
 
+// Close function
+function closeAppAlert() {
+    document.getElementById('app-alert-modal').style.display = 'none';
+}
 
 // 7. INITIALIZE
 loadData();
