@@ -690,22 +690,10 @@ body.dark-mode .home-btn:hover {
     margin: 10px 0;
 }
 #bookmark-btn {
-    position: absolute;
-    top: 16px;
-    left: 16px;
-    z-index: 999;
-    display: inline-flex;
-    align-items: center;
-    gap: 8px;
-    padding: 6px 14px;
-    border: 1px solid var(--border-color, #e2e8f0);
-    border-radius: 20px;
-    cursor: pointer;
-    box-shadow: 0 2px 6px rgba(0,0,0,0.06);
-    font-size: 0.9rem;
-    font-weight: 500;
-    color: var(--text-primary);
-    transition: transform 0.2s ease;
+    position:absolute;
+    top:12px;
+    left:12px;
+    border:grey solid 1px;
 }
 #bookmark-btn:hover {
     transform: scale(1.05);
