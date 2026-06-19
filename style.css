@@ -694,6 +694,8 @@ body.dark-mode .home-btn:hover {
     top:12px;
     left:12px;
     border:grey solid 1px;
+    backface-visibility: hidden;
+    -webkit-backface-visibility: hidden;
 }
 #bookmark-btn:hover {
     transform: scale(1.05);

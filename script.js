@@ -862,11 +862,18 @@ function goHome() {
 // =========================================================================
 // MIXED TEST ENGINE (Paste at the bottom of script.js)
 // =========================================================================
+// =========================================================================
+// MIXED TEST ENGINE & SIDEBAR ROUTING
+// =========================================================================
 
+/**
+ * Gathers all matching MCQs across all categories and starts a random test
+ * @param {number} numQuestions - Total number of questions to pull
+ */
 function startRandomTest(numQuestions = 10) {
     testQuestions = [];
     
-    // 1. Gather all tasks that have options
+    // 1. Gather all tasks that have structural multiple-choice options
     Object.keys(data).forEach(categoryName => {
         const categorySource = Array.isArray(data[categoryName]) ? data[categoryName] : data[categoryName].cards;
         
@@ -881,29 +888,33 @@ function startRandomTest(numQuestions = 10) {
         });
     });
 
+    // 2. Error handling if no multiple-choice items exist
     if (testQuestions.length === 0) {
-        alert("ტესტები ვერ მოიძებნა! დარწმუნდით, რომ JSON ფაილში გაქვთ 'options' ველის მქონე კითხვები.");
+        showAppAlert("ტესტები ვერ მოიძებნა! დარწმუნდით, რომ ფაილში გაქვთ 'options' ველის მქონე კითხვები.");
         return;
     }
 
-    // Shuffle questions array (Helper function shuffleArray must be defined in your script)
+    // 3. Shuffle arrays cleanly using existing helper or fallback random sort
     if (typeof shuffleArray === 'function') {
         shuffleArray(testQuestions);
     } else {
         testQuestions.sort(() => Math.random() - 0.5);
     }
     
+    // Slice down to requested constraint length
     testQuestions = testQuestions.slice(0, Math.min(numQuestions, testQuestions.length));
 
-    // Reset stats
+    // 4. Reset engine states & compute structural timers (90s per question)
     currentTestIndex = 0;
     testScore = 0;
     testTimeRemaining = testQuestions.length * 90; 
     totalTestTime = testTimeRemaining;
 
-    // Toggle viewport screens
+    // 5. De-render standard view panels and activate test viewport
     document.getElementById('menu').style.display = 'none';
-    document.querySelector('.top-nav-bar').style.display = 'none';
+    if (document.querySelector('.top-nav-bar')) {
+        document.querySelector('.top-nav-bar').style.display = 'none';
+    }
     document.getElementById('player').style.display = 'none';
     document.getElementById('test-results').style.display = 'none';
     document.getElementById('test-player').style.display = 'block';
@@ -912,6 +923,9 @@ function startRandomTest(numQuestions = 10) {
     displayTestQuestion();
 }
 
+/**
+ * Renders the active test question state to the DOM and builds choice options
+ */
 function displayTestQuestion() {
     const task = testQuestions[currentTestIndex];
     
@@ -925,6 +939,7 @@ function displayTestQuestion() {
     const progressPercent = (currentTestIndex / testQuestions.length) * 100;
     document.getElementById('test-progress-bar').style.width = `${progressPercent}%`;
 
+    // Generate option elements dynamically
     task.options.forEach((optionText, index) => {
         const btn = document.createElement('button');
         btn.className = "option-btn";
@@ -935,6 +950,7 @@ function displayTestQuestion() {
         optionsContainer.appendChild(btn);
     });
 
+    // Fire LaTeX compiling post-render
     if (typeof renderMathInElement === 'function') {
         renderMathInElement(document.getElementById('test-player'), {
             delimiters: [
@@ -947,6 +963,9 @@ function displayTestQuestion() {
     }
 }
 
+/**
+ * Handles processing choice submission, tracking scoring accuracy, and styling nodes
+ */
 function submitTestAnswer(clickedBtn, selectedIndex, correctIndex) {
     const optionsContainer = document.getElementById('test-options');
     const buttons = optionsContainer.querySelectorAll('.option-btn');
@@ -967,6 +986,9 @@ function submitTestAnswer(clickedBtn, selectedIndex, correctIndex) {
     document.getElementById('test-next-btn').style.display = "block";
 }
 
+/**
+ * Navigates to the next test item or cleanly calls evaluation completion sequences
+ */
 function nextTestQuestion() {
     currentTestIndex++;
     if (currentTestIndex < testQuestions.length) {
@@ -976,6 +998,9 @@ function nextTestQuestion() {
     }
 }
 
+/**
+ * Runs execution loops for the countdown manager engine
+ */
 function startTestTimer() {
     if (testTimerInterval) clearInterval(testTimerInterval);
     updateTimerDisplay();
@@ -986,12 +1011,15 @@ function startTestTimer() {
         
         if (testTimeRemaining <= 0) {
             clearInterval(testTimerInterval);
-            alert("დრო ამოიწურა!");
+            showAppAlert("დრო ამოიწურა!");
             finishTest();
         }
     }, 1000);
 }
 
+/**
+ * Syncs the internal time remaining integer state safely to visual layouts
+ */
 function updateTimerDisplay() {
     const minutes = Math.floor(testTimeRemaining / 60);
     const seconds = testTimeRemaining % 60;
@@ -999,6 +1027,9 @@ function updateTimerDisplay() {
     document.getElementById('test-timer').innerText = `⏱️ ${formattedTime}`;
 }
 
+/**
+ * Halts timers, compiles performance metrics, and serves final results screen
+ */
 function finishTest() {
     clearInterval(testTimerInterval);
     document.getElementById('test-progress-bar').style.width = "100%";
@@ -1015,6 +1046,9 @@ function finishTest() {
     document.getElementById('test-results').style.display = 'block';
 }
 
+/**
+ * Safeguards users against accidental state destruction mid-test
+ */
 function exitTest() {
     if (confirm("ნამდვილად გსურთ ტესტირების შეწყვეტა? მიმდინარე პროგრესი დაიკარგება.")) {
         clearInterval(testTimerInterval);
@@ -1022,6 +1056,9 @@ function exitTest() {
     }
 }
 
+/**
+ * Disconnects operational view state frames of active testing to fallback home templates
+ */
 function goHomeFromTest() {
     document.getElementById('test-player').style.display = 'none';
     document.getElementById('test-results').style.display = 'none';
@@ -1039,8 +1076,7 @@ function toggleSidebar(isOpen) {
     
     if (isOpen) {
         overlay.style.display = "block";
-        // Force reflow to ensure CSS transition triggers smoothly
-        void overlay.offsetWidth; 
+        void overlay.offsetWidth; // Force reflow to ensure CSS transition triggers smoothly
         overlay.style.opacity = "1";
         sidebar.style.left = "0px";
     } else {
@@ -1057,49 +1093,62 @@ function toggleSidebar(isOpen) {
 }
 
 /**
- * Handles actions initiated from the sidebar links
- * @param {string} action 
+ * Central routing processor executing actions called directly from sidebar navigation items
+ * @param {string} actionType - Identifies target route paths
  */
-// Inside your existing handleSidebarAction block frame:
 function handleSidebarAction(actionType) {
-    toggleSidebar(false); // Closes the left menu panel drawer overlay slider
+    toggleSidebar(false); // Cleanly stow drawer panels out of frame first
     
+    // 🎯 CASE 1: ROUTE ROUTINES TO RANDOM GENERATION ENGINE
     if (actionType === 'test') {
-        // Your existing test running loop functions...
+        startRandomTest(10);
     } 
-    // 🎯 ADD THIS NEW CASE BLOCK DIRECTLY BELOW IT:
+    // 🎯 CASE 2: ROUTE SYSTEM TO SAVED BOOKMARKS VIEWER CAROUSEL
     else if (actionType === 'bookmarks') {
-    if (bookmarkedCards.length === 0) {
-        // 🔄 Replaced the standard alert with your custom Georgian modal
-        showAppAlert("სანიშნეების სია ცარიელია! მონიშნეთ ბარათები ვარსკვლავით.");
-        return;
-    }  
-        // Feed the saved bookmarks array directly into the player carousel frame
+        if (!bookmarkedCards || bookmarkedCards.length === 0) {
+            showAppAlert("სანიშნეების სია ცარიელია! მონიშნეთ ბარათები ვარსკვლავით.");
+            return;
+        }  
+        
         currentStack = [...bookmarkedCards];
         currentIndex = 0;
         
-        // Hide primary grid selection dashboard panel views, bring active carousel viewport player forward
         document.getElementById('menu').style.display = 'none';
         document.getElementById('player').style.display = 'block';
-        if (document.getElementById('test-player')) document.getElementById('test-player').style.display = 'none';
+        if (document.getElementById('test-player')) {
+            document.getElementById('test-player').style.display = 'none';
+        }
+        if (document.getElementById('test-results')) {
+            document.getElementById('test-results').style.display = 'none';
+        }
         
-        // Force the headline context title to update cleanly
         document.getElementById('category-title').innerText = "⭐ ჩემი სანიშნეები";
-        
-        // Redraw and render the card UI canvas
         updateCard();
     }
 }
-// Open the custom alert modal with custom text
+
+/**
+ * Serves app alert message down into structural modal overlay templates
+ * @param {string} message - Text context targeted for structural distribution
+ */
 function showAppAlert(message) {
-    document.getElementById('app-alert-text').innerText = message;
-    document.getElementById('app-alert-modal').style.display = 'flex';
+    const alertText = document.getElementById('app-alert-text');
+    const alertModal = document.getElementById('app-alert-modal');
+    if (alertText && alertModal) {
+        alertText.innerText = message;
+        alertModal.style.display = 'flex';
+    }
 }
 
-// Close function
+/**
+ * Removes custom alert box overlay structures out of layout rendering frames
+ */
 function closeAppAlert() {
-    document.getElementById('app-alert-modal').style.display = 'none';
+    const alertModal = document.getElementById('app-alert-modal');
+    if (alertModal) {
+        alertModal.style.display = 'none';
+    }
 }
 
-// 7. INITIALIZE
+// 7. AUTOMATED FILE DATA INITIALIZATION TRIGGER
 loadData();
