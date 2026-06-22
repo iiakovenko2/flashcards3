@@ -256,10 +256,14 @@ function updateCard() {
     closeTask();
     closeTheory();
     updateBookmarkUI();
+    
     // 1. IMMEDIATELY reset the flip state so the animation starts
     if (flashcard) {
         flashcard.classList.remove('flipped');
         flashcard.onclick = toggleFlip; 
+        
+        // 📱 Setup Touch Swipe Gestures for Mobile & Tablets Safely
+        setupSwipeGestures(flashcard);
     }
 
     // 2. DELAY the content update slightly (e.g., 50-100ms) 
@@ -333,7 +337,6 @@ function updateCard() {
     // Progress text (can stay outside the timeout as it's not on the card face)
     const progressEl = document.getElementById('progress');
     if (progressEl) progressEl.innerText = `${currentIndex + 1} / ${currentStack.length}`;
-    
 }
 
 // 4. THEORY MODAL FUNCTIONS
@@ -1147,6 +1150,47 @@ function closeAppAlert() {
     const alertModal = document.getElementById('app-alert-modal');
     if (alertModal) {
         alertModal.style.display = 'none';
+    }
+}
+
+// =========================================================================
+// GESTURE ENGINE: MOBILE TOUCH EVENTS
+// =========================================================================
+let touchStartX = 0;
+let touchEndX = 0;
+
+function setupSwipeGestures(cardElement) {
+    cardElement.removeEventListener('touchstart', handleTouchStart);
+    cardElement.removeEventListener('touchend', handleTouchEnd);
+
+    cardElement.addEventListener('touchstart', handleTouchStart, { passive: true });
+    cardElement.addEventListener('touchend', handleTouchEnd, { passive: true });
+}
+
+function handleTouchStart(event) {
+    touchStartX = event.changedTouches[0].screenX;
+}
+
+function handleTouchEnd(event) {
+    touchEndX = event.changedTouches[0].screenX;
+    handleSwipeThreshold();
+}
+
+function handleSwipeThreshold() {
+    const swipeThreshold = 60; // minimum distance in pixels
+    const swipeDistance = touchEndX - touchStartX;
+
+    // Guard against running shifts if overlay interaction fields are active
+    const tModal = document.getElementById('theory-modal');
+    const taskModal = document.getElementById('task-modal');
+    if ((tModal && tModal.style.display === 'block') || (taskModal && taskModal.style.display === 'block')) {
+        return;
+    }
+
+    if (swipeDistance < -swipeThreshold) {
+        nextCard(); // Swiped Left
+    } else if (swipeDistance > swipeThreshold) {
+        prevCard(); // Swiped Right
     }
 }
 
