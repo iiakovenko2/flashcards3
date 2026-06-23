@@ -1154,7 +1154,7 @@ function closeAppAlert() {
 }
 
 // =========================================================================
-// GESTURE ENGINE: MOBILE TOUCH EVENTS
+// GESTURE ENGINE: MOBILE TOUCH EVENTS WITH VISUAL SHUFFLE ANIMATION
 // =========================================================================
 let touchStartX = 0;
 let touchEndX = 0;
@@ -1177,7 +1177,7 @@ function handleTouchEnd(event) {
 }
 
 function handleSwipeThreshold() {
-    const swipeThreshold = 60; // minimum distance in pixels
+    const swipeThreshold = 60; // Minimum distance in pixels
     const swipeDistance = touchEndX - touchStartX;
 
     // Guard against running shifts if overlay interaction fields are active
@@ -1187,12 +1187,67 @@ function handleSwipeThreshold() {
         return;
     }
 
+    const flashcard = document.querySelector('.flashcard');
+    if (!flashcard) return;
+
     if (swipeDistance < -swipeThreshold) {
-        nextCard(); // Swiped Left
+        // ➡️ Swiped Left: Animate out to the left
+        animateAndChangeCard(flashcard, 'left', nextCard);
     } else if (swipeDistance > swipeThreshold) {
-        prevCard(); // Swiped Right
+        // ⬅️ Swiped Right: Animate out to the right
+        animateAndChangeCard(flashcard, 'right', prevCard);
     }
 }
+
+/**
+ * Handles the smooth slide-out, state swap, and slide-in transition mechanics
+ */
+/**
+ * Handles the smooth slide-out, state swap, and slide-in transition mechanics
+ */
+function animateAndChangeCard(cardElement, direction, changeCardStateFunction) {
+    // 1. Prepare fast transitions for the exit
+    cardElement.style.transition = 'transform 0.25s ease, opacity 0.25s ease';
+    
+    // 2. Throw the card off-screen in the correct direction
+    const shiftX = direction === 'left' ? '-120%' : '120%';
+    cardElement.style.transform = `translateX(${shiftX}) rotate(${direction === 'left' ? '-10deg' : '10deg'})`;
+    cardElement.style.opacity = '0';
+
+    // 3. Wait for the exit animation to finish
+    setTimeout(() => {
+        // Cut off transitions temporarily so changes happen invisibly
+        cardElement.style.transition = 'none';
+        
+        // Load the actual next/prev data state
+        changeCardStateFunction(); 
+        
+        // Reposition the card on the opposite side off-screen immediately
+        const resetX = direction === 'left' ? '120%' : '-120%';
+        cardElement.style.transform = `translateX(${resetX})`;
+
+        // 4. Force a tiny DOM layout calculation pause, then slide it beautifully back to center
+        requestAnimationFrame(() => {
+            setTimeout(() => {
+                // Re-enable smooth transitions for sliding in
+                cardElement.style.transition = 'transform 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.15), opacity 0.3s ease';
+                cardElement.style.transform = 'translateX(0) rotate(0deg)';
+                cardElement.style.opacity = '1';
+                
+                // 🛠️ FIX: Clean up inline styles completely after slide-in finishes (300ms)
+                // This unlocks the element so your standard CSS flip mechanics can work flawlessly!
+                setTimeout(() => {
+                    cardElement.style.transform = '';
+                    cardElement.style.transition = '';
+                    cardElement.style.opacity = '';
+                }, 300); 
+
+            }, 20);
+        });
+    }, 250);
+}
+
+
 
 // 7. AUTOMATED FILE DATA INITIALIZATION TRIGGER
 loadData();
