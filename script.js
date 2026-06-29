@@ -1199,12 +1199,50 @@ function handleSwipeThreshold() {
     }
 }
 
+// =========================================================================
+// DEVELOPER UTILITIES: FEEDBACK & SUPPORT
+// =========================================================================
+
 /**
- * Handles the smooth slide-out, state swap, and slide-in transition mechanics
+ * Automatically captures active card details and opens an email client to report a bug
  */
+function openErrorReport() {
+    if (currentStack.length === 0) {
+        showAppAlert("აქტიური ბარათი ვერ მოიძებნა.");
+        return;
+    }
+
+    const currentCard = currentStack[currentIndex];
+    const categoryTitle = document.getElementById('category-title')?.innerText || "უცნობი კატეგორია";
+    
+    // Clean string format for email body
+    const emailTo = "your-email@example.com"; // 📧 Replace with your actual email address
+    const subject = encodeURIComponent(`შეცდომა მათემატიკის ბარათებში: ${categoryTitle}`);
+    const body = encodeURIComponent(
+        `გამარჯობა,\n\nაღმოჩენილია შეცდომა კატეგორიაში: ${categoryTitle}\n` +
+        `მიმდინარე კითხვის ინდექსი: ${currentIndex + 1}\n` +
+        `კითხვის ტექსტი: ${currentCard.q}\n\n` +
+        `აღწერა (გთხოვთ მიუთითოთ რა არის არასწორი): \n`
+    );
+
+    // Launch native mail client with automated fields pre-filled
+    window.location.href = `mailto:${emailTo}?subject=${subject}&body=${body}`;
+}
+
 /**
- * Handles the smooth slide-out, state swap, and slide-in transition mechanics
+ * Serves donation or support coordinates via the app's native modal layout
  */
+function openDonateModal() {
+    // You can customize this message with your personal donation profile link or bank details
+    const supportMessage = 
+        "თუ აპლიკაცია გეხმარებათ მათემატიკის სწავლაში და გსურთ დეველოპერს მადლობა გადაუხადოთ, " +
+        "შეგიძლიათ მხარი დაუჭიროთ პროექტს:\n\n" +
+        "☕ TBC / BOG: [ჩაწერე შენი IBAN ან ანგარიშის ნომერი]\n" +
+        "Paypal: [შენი ლინკი]";
+        
+    showAppAlert(supportMessage);
+}
+
 function animateAndChangeCard(cardElement, direction, changeCardStateFunction) {
     // 1. Prepare fast transitions for the exit
     cardElement.style.transition = 'transform 0.25s ease, opacity 0.25s ease';

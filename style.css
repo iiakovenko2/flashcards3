@@ -710,3 +710,35 @@ body.dark-mode .home-btn:hover {
     /* Smooths out the sliding animation without creating layout layer glitches */
     transition: transform 0.3s ease; 
 }
+/* Feedback & Donation Button Baselines */
+.error-btn {
+    background-color: #e9e9e9; /* Warning Red */
+    color: #6b6969;
+    border: none;
+    padding: 8px 14px;
+    border-radius: 6px;
+    cursor: pointer;
+    font-family: inherit;
+    font-size: 0.9rem;
+    transition: background 0.2s ease;
+}
+
+.error-btn:hover {
+    background-color: #fffafa;
+}
+
+.support-btn {
+    background-color: #f5ede2; /* Friendly Amber/Orange */
+    color: #ad9b9b;
+    border: none;
+    padding: 8px 14px;
+    border-radius: 6px;
+    cursor: pointer;
+    font-family: inherit;
+    font-size: 0.9rem;
+    transition: background 0.2s ease;
+}
+
+.support-btn:hover {
+    background-color: #ffffff;
+}

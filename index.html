@@ -219,7 +219,14 @@
         </div>
     </div>   
 <header>
-    
+    <div class="developer-actions" style="margin-top: 15px; display: flex; gap: 10px; justify-content: center;">
+    <button id="report-error-btn" class="action-btn error-btn" onclick="openErrorReport()">
+        ⚠️ შეცდომის რეპორტი
+    </button>
+    <button id="donate-btn" class="action-btn support-btn" onclick="openDonateModal()">
+        ☕ მადლობა დეველოპერს
+    </button>
+</div>
     <div id="stat-counter" class="stats-container">ითვლება...</div>
 </header>
     <script src="script.js"></script>
