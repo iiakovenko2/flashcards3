@@ -27,7 +27,6 @@
 
     <h1 class="app-title" style="margin: 0; font-size: 1.8rem; text-align: center; flex-grow: 1; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">მათემატიკის ბარათები</h1>
     
-    
 </div>
 
 <div id="sidebar-overlay" onclick="toggleSidebar(false)" style="display: none; position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; background: rgba(0, 0, 0, 0.4); backdrop-filter: blur(2px); z-index: 9999; opacity: 0; transition: opacity 0.3s ease;"></div>
@@ -61,8 +60,13 @@
             <span style="font-size: 1.15rem;">⏱️</span> შერეული ტესტირება
         </button>
 
-        <button onclick="handleSidebarAction('bookmarks')" class="menu-item-btn secondary" style="display: flex; align-items: center; gap: 12px; width: 100%; padding: 12px 15px; border: none; border-radius: 12px; background-color: transparent; color: var(--text-primary); font-weight: 500; font-size: 1rem; cursor: pointer; text-align: left; box-sizing: border-box; ">
+        <button onclick="handleSidebarAction('bookmarks')" class="menu-item-btn secondary" style="display: flex; align-items: center; gap: 12px; width: 100%; padding: 12px 15px; border: none; border-radius: 12px; background-color: transparent; color: var(--text-primary); font-weight: 500; font-size: 1rem; cursor: pointer; text-align: left; box-sizing: border-box;">
             <span style="font-size: 1.15rem;">⭐</span> სანიშნეები
+        </button>
+
+        <!-- NEW: Arithmetic Skills Practice Button -->
+        <button onclick="openSkillsModal()" class="menu-item-btn secondary" style="display: flex; align-items: center; gap: 12px; width: 100%; padding: 12px 15px; border: none; border-radius: 12px; background-color: transparent; color: var(--text-primary); font-weight: 500; font-size: 1rem; cursor: pointer; text-align: left; box-sizing: border-box;">
+            <span style="font-size: 1.15rem;">⚡</span> არითმეტიკული უნარები
         </button>
     </nav>
 
@@ -76,8 +80,8 @@
     </div>
 
     <div class="top-nav-bar" style="max-width: 600px; margin: 0 auto 15px auto; padding: 0 10px; display: flex; gap: 10px; overflow-x: auto; white-space: nowrap; -webkit-overflow-scrolling: touch;">
-       
-        </div>
+        
+    </div>
 
     <div id="menu" class="menu-container">
         
@@ -95,7 +99,7 @@
                     <polyline points="9 22 9 12 15 12 15 22"></polyline>
                 </svg>
             </button>
-           
+            
             <button id="help-btn" class="action-chip theory-btn" onclick="openTheory(event)" style="display:none;">
                 <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                     <circle cx="12" cy="12" r="10"></circle><line x1="12" y1="16" x2="12" y2="12"></line><line x1="12" y1="8" x2="12.01" y2="8"></line>
@@ -179,16 +183,18 @@
             <div id="help-text-modal"></div>
         </div>
     </div>
-  <div id="app-alert-modal" class="modal" style="display: none;">
-    <div class="modal-content" style="max-width: 400px; text-align: center; border-top: 5px solid #ef4444;">
-        <h3 id="app-alert-title" style="margin-top:0; color: var(--text-primary);">შეტყობინება</h3>
-        <hr>
-        <div id="app-alert-text" style="margin: 20px 0; color: var(--text-primary); font-size: 1.1rem;"></div>
-        <button onclick="closeAppAlert()" class="category-btn" style="padding: 10px 25px; background-color: #4a90e2; color: white; border: none; border-radius: 8px; cursor: pointer; font-weight: bold;">
-            გასაგებია
-        </button>
+
+    <div id="app-alert-modal" class="modal" style="display: none;">
+        <div class="modal-content" style="max-width: 400px; text-align: center; border-top: 5px solid #ef4444;">
+            <h3 id="app-alert-title" style="margin-top:0; color: var(--text-primary);">შეტყობინება</h3>
+            <hr>
+            <div id="app-alert-text" style="margin: 20px 0; color: var(--text-primary); font-size: 1.1rem;"></div>
+            <button onclick="closeAppAlert()" class="category-btn" style="padding: 10px 25px; background-color: #4a90e2; color: white; border: none; border-radius: 8px; cursor: pointer; font-weight: bold;">
+                გასაგებია
+            </button>
+        </div>
     </div>
-</div>
+
     <div id="task-modal" class="modal">
         <div class="modal-content" style="border-top: 5px solid #27ae60;">
             <span class="close-btn" onclick="closeTask()">&times;</span>
@@ -218,6 +224,57 @@
             </div>
         </div>
     </div>   
+
+    <!-- NEW: Interactive Skills Generator Modal -->
+    <div id="skills-generator-modal" class="modal">
+        <div class="modal-content" style="border-top: 5px solid #3b82f6; max-width: 500px;">
+            <span class="close-btn" onclick="closeSkillsModal()">&times;</span>
+            <h3 style="margin-top: 0; color: var(--text-primary, #2c3e50);">⚡ არითმეტიკული სავარჯიშოები</h3>
+            <hr>
+            
+            <div style="margin-bottom: 15px;">
+                <label for="skill-select" style="display: block; font-weight: bold; margin-bottom: 8px; color: var(--text-primary, #2c3e50);">აირჩიეთ უნარი:</label>
+                <select id="skill-select" style="width: 100%; padding: 10px; border-radius: 8px; border: 1px solid var(--border-color, #ccc); background-color: var(--bg-card, #fff); color: var(--text-primary, #000); font-size: 0.95rem;">
+                    <option value="primeFactors">1. ნატურალური რიცხვის დაშლა მარტივ მამრვლევად</option>
+                    <option value="primeProduct">2. რიცხვის ჩაწერა მარტივი მამრავლების ნამრავლის სახით</option>
+                    <option value="expandedForm">3. ათობით სისტემაში რიცხვის ჩაწერა გაშლილი სახით</option>
+                    <option value="gcd">4. ორი (ან მეტი) რიცხვის უდიდესი საერთო გამყოფის (უსგ) პოვნა</option>
+                    <option value="lcm">5. ორი (ან მეტი) რიცხვის უმცირესი საერთო ჯერადის (უსჯ) პოვნა</option>
+                    <option value="mixedToImproper">6. შერეული რიცხვის გადაქცევა არაწესიერ წილადად</option>
+                    <option value="improperToMixed">7. არაწესიერი წილადის გადაქცევა შერეულ წილადად</option>
+                    <option value="fractionToDecimal">8. წილადის გადაყვანა პერიოდულ ათწილადში</option>
+                    <option value="decimalToFraction">9. პერიოდული ათწილადის გადაყვანა წილადში</option>
+                    <option value="compareFractions">10. წილადების შედარება</option>
+                    <option value="commonDenominator">11. წილადების გაერთმნიშვნელიანება</option>
+                    <option value="sameDenomAddSub">12. საერთომნიშვნელიანი წილადების შეკრება და გამოკლება</option>
+                    <option value="diffDenomAddSub">13. სხვადასხვამნიშვნელიანი წილადების შეკრება და გამოკლება</option>
+                    <option value="mixedAddSub">14. შერეული რიცხვების შეკრება და გამოკლება</option>
+                    <option value="multiplyFractions">15. წილადების გამრავლება</option>
+                    <option value="divideFractions">16. წილადების გაყოფა</option>
+                    <option value="mixedMultDiv">17. შერეული რიცხვების გამრავლება და გაყოფა</option>
+                    <option value="decimalAddSub">18. ათწილადების შეკრება და გამოკლება ქვეშმიწერით</option>
+                    <option value="decimalMult">19. ათწილადების გამრავლება ქვეშმიწერით</option>
+                    <option value="decimalDiv">20. ათწილადების გაყოფა ქვეშმიწერით</option>
+                    <option value="orderOperations">21. მრავალმოქმედებიან გამოსახულებაში მოქმედებათა თანმიმდევრობა</option>
+                    <option value="decToBin">22. ათობითიდან ორობით პოზიციურ სისტემაში გადაყვანა</option>
+                    <option value="binToDec">23. ორობითიდან ათობით პოზიციურ სისტემაში გადაყვანა</option>
+                </select>
+            </div>
+
+            <button onclick="generateNewSkillTask()" class="category-btn" style="width: 100%; padding: 12px; background-color: #3b82f6; color: white; border: none; border-radius: 8px; font-weight: bold; cursor: pointer; font-size: 1rem;">
+                🎲 ამოცანის გენერირება
+            </button>
+
+            <div id="gen-task-display" style="display: none; margin-top: 20px; padding: 15px; border-radius: 10px; background-color: var(--bg-card, #f8fafc); border: 1px solid var(--border-color, #e2e8f0); text-align: center;">
+                <div id="gen-task-q" style="font-size: 1.2rem; font-weight: bold; margin-bottom: 15px; color: var(--text-primary, #1e293b);"></div>
+                <button id="gen-ans-toggle-btn" onclick="toggleGenTaskAnswer()" style="background-color: #10b981; color: white; border: none; padding: 8px 16px; border-radius: 6px; font-weight: bold; cursor: pointer;">
+                    👁️ პასუხის ნახვა
+                </button>
+                <div id="gen-task-a" style="display: none; margin-top: 12px; padding-top: 12px; border-top: 1px dashed var(--border-color, #cbd5e1); font-size: 1.1rem; color: #27ae60; font-weight: bold;"></div>
+            </div>
+        </div>
+    </div>
+
 <header>
     <div class="developer-actions" style="margin-top: 15px; display: flex; gap: 10px; justify-content: center;">
     <button id="report-error-btn" class="action-btn error-btn" onclick="openErrorReport()">
@@ -310,6 +367,63 @@
             document.getElementById('player').style.display = 'block';
             updateCard();
         }
+
+        // Skills Modal Controls
+        function openSkillsModal() {
+            toggleSidebar(false);
+            document.getElementById('skills-generator-modal').style.display = 'flex';
+        }
+
+        function closeSkillsModal() {
+            document.getElementById('skills-generator-modal').style.display = 'none';
+        }
+
+        function toggleGenTaskAnswer() {
+            const ansEl = document.getElementById('gen-task-a');
+            const btnEl = document.getElementById('gen-ans-toggle-btn');
+            if (ansEl.style.display === 'none') {
+                ansEl.style.display = 'block';
+                btnEl.innerText = '🙈 პასუხის დამალვა';
+            } else {
+                ansEl.style.display = 'none';
+                btnEl.innerText = '👁️ პასუხის ნახვა';
+            }
+        }
+
+        function generateNewSkillTask() {
+            const skill = document.getElementById('skill-select').value;
+            const qEl = document.getElementById('gen-task-q');
+            const aEl = document.getElementById('gen-task-a');
+            const displayBox = document.getElementById('gen-task-display');
+            const btnEl = document.getElementById('gen-ans-toggle-btn');
+
+            aEl.style.display = 'none';
+            btnEl.innerText = '👁️ პასუხის ნახვა';
+
+            // Placeholder generation routing (Logic functions will reside in script.js)
+            if (typeof window.generateSkillTask === 'function') {
+                const task = window.generateSkillTask(skill);
+                qEl.innerHTML = task.q;
+                aEl.innerHTML = task.a;
+            } else {
+                qEl.innerHTML = 'გენერატორი მზადდება...';
+                aEl.innerHTML = '';
+            }
+
+            displayBox.style.display = 'block';
+
+            if (window.renderMathInElement) {
+                renderMathInElement(displayBox, {
+                    delimiters: [
+                        {left: "$$", right: "$$", display: true},
+                        {left: "$", right: "$", display: false},
+                        {left: "\\(", right: "\\)", display: false},
+                        {left: "\\[", right: "\\]", display: true}
+                    ],
+                    throwOnError: false
+                });
+            }
+        }
     </script>
 </body>
-</html> 
+</html>

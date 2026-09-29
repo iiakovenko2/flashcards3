@@ -1216,7 +1216,7 @@ function openErrorReport() {
     const categoryTitle = document.getElementById('category-title')?.innerText || "უცნობი კატეგორია";
     
     // Clean string format for email body
-    const emailTo = "your-email@example.com"; // 📧 Replace with your actual email address
+    const emailTo = "mathcards.info@gmail.com"; // 📧 Replace with your actual email address
     const subject = encodeURIComponent(`შეცდომა მათემატიკის ბარათებში: ${categoryTitle}`);
     const body = encodeURIComponent(
         `გამარჯობა,\n\nაღმოჩენილია შეცდომა კატეგორიაში: ${categoryTitle}\n` +
@@ -1283,6 +1283,515 @@ function animateAndChangeCard(cardElement, direction, changeCardStateFunction) {
             }, 20);
         });
     }, 250);
+}
+
+// ==========================================
+// არითმეტიკული სავარჯიშოების გენერატორი
+// ==========================================
+
+// დამხმარე ფუნქცია შემთხვევითი მთელი რიცხვის მისაღებად [min, max] ინტერვალში
+function getRandomInt(min, max) {
+    return Math.floor(Math.random() * (max - min + 1)) + min;
+}
+
+// უდიდესი საერთო გამყოფი (უსგ)
+function gcd(a, b) {
+    return b === 0 ? a : gcd(b, a % b);
+}
+
+// უმცირესი საერთო ჯერადი (უსჯ)
+function lcm(a, b) {
+    return (a * b) / gcd(a, b);
+}
+
+// მთავარი ფუნქცია, რომელსაც HTML-იდან იძახებს generateNewSkillTask()
+window.generateSkillTask = function(skill) {
+    switch (skill) {
+        case 'primeFactors': return genPrimeFactors();
+        case 'primeProduct': return genPrimeProduct();
+        case 'expandedForm': return genExpandedForm();
+        case 'gcd': return genGCD();
+        case 'lcm': return genLCM();
+        case 'mixedToImproper': return genMixedToImproper();
+        case 'improperToMixed': return genImproperToMixed();
+        case 'fractionToDecimal': return genFractionToDecimal();
+        case 'decimalToFraction': return genFractionToDecimal(); // Reuse
+        case 'compareFractions': return genCompareFractions();
+        case 'commonDenominator': return genCommonDenominator();
+        case 'sameDenomAddSub': return genSameDenomAddSub();
+        case 'diffDenomAddSub': return genDiffDenomAddSub();
+        case 'mixedAddSub': return genMixedAddSub();
+        case 'multiplyFractions': return genMultiplyFractions();
+        case 'divideFractions': return genDivideFractions();
+        case 'mixedMultDiv': return genMixedMultDiv();
+        case 'decimalAddSub': return genDecimalAddSub();
+        case 'decimalMult': return genDecimalMult();
+        case 'decimalDiv': return genDecimalDiv();
+        case 'orderOperations': return genOrderOperations();
+        case 'decToBin': return genDecToBin();
+        case 'binToDec': return genBinToDec();
+        default:
+            return {
+                q: "ამ უნარის გენერატორი შემუშავების პროცესშია.",
+                a: "error loading answer..."
+            };
+    }
+};
+
+// ------------------------------------------
+// კონკრეტული უნარების გენერატორები
+// ------------------------------------------
+
+// 1. მარტივ მამრავლებად დაშლა
+function genPrimeFactors() {
+    const primes = [2, 3, 5, 7, 11];
+    let num = 1;
+    let factors = [];
+    const count = getRandomInt(2, 4);
+    
+    for (let i = 0; i < count; i++) {
+        const p = primes[getRandomInt(0, primes.length - 1)];
+        factors.push(p);
+        num *= p;
+    }
+    
+    factors.sort((a, b) => a - b);
+    
+    return {
+        q: `დაშალეთ მარტივ მამრავლებად რიცხვი: $${num}$`,
+        a: `$${num} = ${factors.join(' \\cdot ')}$`
+    };
+}
+
+// 2. ჩაწერა მარტივი მამრავლების ხარისხების ნამრავლის სახით
+function genPrimeProduct() {
+    const num = getRandomInt(20, 100);
+    let temp = num;
+    let map = {};
+    let d = 2;
+    
+    while (temp > 1) {
+        while (temp % d === 0) {
+            map[d] = (map[d] || 0) + 1;
+            temp /= d;
+        }
+        d++;
+        if (d * d > temp) {
+            if (temp > 1) {
+                map[temp] = (map[temp] || 0) + 1;
+                break;
+            }
+        }
+    }
+
+    let resultArr = [];
+    for (let prime in map) {
+        if (map[prime] === 1) {
+            resultArr.push(`${prime}`);
+        } else {
+            resultArr.push(`${prime}^${map[prime]}`);
+        }
+    }
+
+    return {
+        q: `ჩაწერეთ $${num}$ მარტივი მამრავლების ნამრავლის სახით:`,
+        a: `$${num} = ${resultArr.join(' \\cdot ')}$`
+    };
+}
+
+// 3. გაშლილი სახე ათობით სისტემაში
+function genExpandedForm() {
+    const num = getRandomInt(100, 9999);
+    const str = num.toString();
+    const len = str.length;
+    let parts = [];
+
+    for (let i = 0; i < len; i++) {
+        const digit = parseInt(str[i]);
+        if (digit !== 0) {
+            const power = len - 1 - i;
+            if (power === 0) {
+                parts.push(`${digit}`);
+            } else {
+                parts.push(`${digit} \\cdot 10^{${power}}`);
+            }
+        }
+    }
+
+    return {
+        q: `ჩაწერეთ რიცხვი $${num}$ გაშლილი სახით:`,
+        a: `$${num} = ${parts.join(' + ')}$`
+    };
+}
+
+// 4. უდიდესი საერთო გამყოფი (უსგ)
+function genGCD() {
+    const g = getRandomInt(2, 12);
+    const a = g * getRandomInt(2, 9);
+    let b = g * getRandomInt(2, 9);
+    while (gcd(a, b) !== g) {
+        b = g * getRandomInt(2, 9);
+    }
+
+    return {
+        q: `იპოვეთ $${a}$-ისა და $${b}$-ის უდიდესი საერთო გამყოფი (უსგ):`,
+        a: `$$\\text{უსგ}(${a}, ${b}) = ${g}$$`
+    };
+}
+
+// 5. უმცირესი საერთო ჯერადი (უსჯ)
+function genLCM() {
+    const a = getRandomInt(3, 12);
+    let b = getRandomInt(3, 12);
+    while (a === b) {
+        b = getRandomInt(3, 12);
+    }
+    const ans = lcm(a, b);
+
+    return {
+        q: `იპოვეთ $${a}$-ისა და $${b}$-ის უმცირესი საერთო ჯერადი (უსჯ):`,
+        a: `$$\\text{უსჯ}(${a}, ${b}) = ${ans}$$`
+    };
+}
+
+// 6. შერეული რიცხვის გადაქცევა არაწესიერ წილადად
+function genMixedToImproper() {
+    const w = getRandomInt(1, 8);
+    const d = getRandomInt(3, 9);
+    const n = getRandomInt(1, d - 1);
+    const top = w * d + n;
+
+    return {
+        q: `გადააქციეთ შერეული რიცხვი $${w}\\frac{${n}}{${d}}$ არაწესიერ წილადად:`,
+        a: `$$\\frac{${top}}{${d}}$$`
+    };
+}
+
+// 7. არაწესიერი წილადის გადაქცევა შერეულ წილადად
+function genImproperToMixed() {
+    const d = getRandomInt(3, 9);
+    const w = getRandomInt(1, 7);
+    const n = getRandomInt(1, d - 1);
+    const top = w * d + n;
+
+    return {
+        q: `გადააქციეთ არაწესიერი წილადი $\\frac{${top}}{${d}}$ შერეულ რიცხვად:`,
+        a: `$$${w}\\frac{${n}}{${d}}$$`
+    };
+}
+
+// 8. წილადის გადაყვანა ათწილადში
+function genFractionToDecimal() {
+    const denoms = [2, 4, 5, 8, 10, 20, 25, 50];
+    const d = denoms[getRandomInt(0, denoms.length - 1)];
+    let n = getRandomInt(1, d - 1);
+    while (gcd(n, d) > 1) {
+        n = getRandomInt(1, d - 1);
+    }
+    const val = (n / d).toString();
+
+    return {
+        q: `გადაიყვანეთ წილადი $\\frac{${n}}{${d}}$ ათწილადში:`,
+        a: `$${val}$`
+    };
+}
+
+// 10. წილადების შედარება
+function genCompareFractions() {
+    const d1 = getRandomInt(3, 9);
+    const d2 = getRandomInt(3, 9);
+    const n1 = getRandomInt(1, d1 - 1);
+    const n2 = getRandomInt(1, d2 - 1);
+
+    const val1 = n1 / d1;
+    const val2 = n2 / d2;
+    
+    let sign = "=";
+    if (val1 > val2) sign = ">";
+    if (val1 < val2) sign = "<";
+
+    return {
+        q: `შეადარეთ წილადები: $\\frac{${n1}}{${d1}}$ და $\\frac{${n2}}{${d2}}$`,
+        a: `$$\\frac{${n1}}{${d1}} ${sign} \\frac{${n2}}{${d2}}$$`
+    };
+}
+
+// 11. წილადების გაერთმნიშვნელიანება
+function genCommonDenominator() {
+    const d1 = getRandomInt(2, 6);
+    let d2 = getRandomInt(2, 6);
+    while (d1 === d2) d2 = getRandomInt(2, 6);
+
+    const n1 = getRandomInt(1, d1 - 1);
+    const n2 = getRandomInt(1, d2 - 1);
+    const commonD = lcm(d1, d2);
+
+    const newN1 = n1 * (commonD / d1);
+    const newN2 = n2 * (commonD / d2);
+
+    return {
+        q: `მიიყვანეთ საერთო მნიშვნელობამდე წილადები: $\\frac{${n1}}{${d1}}$ და $\\frac{${n2}}{${d2}}$`,
+        a: `$$\\frac{${newN1}}{${commonD}} \\quad \\text{და} \\quad \\frac{${newN2}}{${commonD}}$$`
+    };
+}
+
+// 12. საერთომნიშვნელიანი წილადების შეკრება/გამოკლება
+function genSameDenomAddSub() {
+    const d = getRandomInt(4, 12);
+    const isAdd = Math.random() > 0.5;
+    const n1 = getRandomInt(1, d - 1);
+    const n2 = getRandomInt(1, isAdd ? d - 1 : n1);
+
+    const numRes = isAdd ? n1 + n2 : n1 - n2;
+    const op = isAdd ? '+' : '-';
+
+    const g = gcd(Math.abs(numRes), d);
+    const finalN = numRes / g;
+    const finalD = d / g;
+
+    let ansStr = finalD === 1 ? `$${finalN}$` : `$$\\frac{${finalN}}{${finalD}}$$`;
+    if (finalN === 0) ansStr = `$0$`;
+
+    return {
+        q: `გამოთვალეთ: $\\frac{${n1}}{${d}} ${op} \\frac{${n2}}{${d}}$`,
+        a: ansStr
+    };
+}
+
+// 13. სხვადასხვამნიშვნელიანი წილადების შეკრება/გამოკლება
+function genDiffDenomAddSub() {
+    const d1 = getRandomInt(2, 6);
+    let d2 = getRandomInt(2, 6);
+    while (d1 === d2) d2 = getRandomInt(2, 6);
+
+    const n1 = getRandomInt(1, d1 - 1);
+    const n2 = getRandomInt(1, d2 - 1);
+    const isAdd = Math.random() > 0.5;
+
+    const commonD = lcm(d1, d2);
+    const numRes = isAdd ? (n1 * (commonD / d1) + n2 * (commonD / d2)) : (n1 * (commonD / d1) - n2 * (commonD / d2));
+    
+    const g = gcd(Math.abs(numRes), commonD);
+    const finalN = numRes / g;
+    const finalD = commonD / g;
+
+    const op = isAdd ? '+' : '-';
+
+    return {
+        q: `იპოვეთ გამოსახულების მნიშვნელობა: $\\frac{${n1}}{${d1}} ${op} \\frac{${n2}}{${d2}}$`,
+        a: finalD === 1 ? `$${finalN}$` : `$$\\frac{${finalN}}{${finalD}}$$`
+    };
+}
+
+// 14. შერეული რიცხვების შეკრება და გამოკლება
+function genMixedAddSub() {
+    const w1 = getRandomInt(1, 5);
+    const w2 = getRandomInt(1, 5);
+    const d1 = getRandomInt(2, 5);
+    let d2 = getRandomInt(2, 5);
+
+    const n1 = getRandomInt(1, d1 - 1);
+    const n2 = getRandomInt(1, d2 - 1);
+    const isAdd = Math.random() > 0.5;
+
+    const top1 = w1 * d1 + n1;
+    const top2 = w2 * d2 + n2;
+    const commonD = lcm(d1, d2);
+
+    let numRes = isAdd 
+        ? (top1 * (commonD / d1) + top2 * (commonD / d2)) 
+        : (top1 * (commonD / d1) - top2 * (commonD / d2));
+
+    if (!isAdd && numRes < 0) {
+        // დარწმუნდეთ, რომ პასუხი დადებითია გამოკლებისას
+        return genMixedAddSub();
+    }
+
+    const g = gcd(Math.abs(numRes), commonD);
+    const finalN = numRes / g;
+    const finalD = commonD / g;
+
+    const op = isAdd ? '+' : '-';
+    
+    // გადავიყვანოთ პასუხი შერეულ წილადად
+    const ansW = Math.floor(finalN / finalD);
+    const ansRem = finalN % finalD;
+    
+    let ansStr = `$${ansW}$`;
+    if (ansRem > 0) {
+        ansStr = ansW > 0 ? `$$${ansW}\\frac{${ansRem}}{${finalD}}$$` : `$$\\frac{${ansRem}}{${finalD}}$$`;
+    }
+
+    return {
+        q: `გამოთვალეთ: $${w1}\\frac{${n1}}{${d1}} ${op} ${w2}\\frac{${n2}}{${d2}}$`,
+        a: ansStr
+    };
+}
+
+// 15. წილადების გამრავლება
+function genMultiplyFractions() {
+    const d1 = getRandomInt(2, 8);
+    const d2 = getRandomInt(2, 8);
+    const n1 = getRandomInt(1, d1 - 1);
+    const n2 = getRandomInt(1, d2 - 1);
+
+    const num = n1 * n2;
+    const den = d1 * d2;
+    const g = gcd(num, den);
+
+    const finalN = num / g;
+    const finalD = den / g;
+
+    return {
+        q: `იპოვეთ ნამრავლი: $\\frac{${n1}}{${d1}} \\cdot \\frac{${n2}}{${d2}}$`,
+        a: finalD === 1 ? `$${finalN}$` : `$$\\frac{${finalN}}{${finalD}}$$`
+    };
+}
+
+// 16. წილადების გაყოფა
+function genDivideFractions() {
+    const d1 = getRandomInt(2, 8);
+    const d2 = getRandomInt(2, 8);
+    const n1 = getRandomInt(1, d1 - 1);
+    const n2 = getRandomInt(1, d2 - 1);
+
+    const num = n1 * d2;
+    const den = d1 * n2;
+    const g = gcd(num, den);
+
+    const finalN = num / g;
+    const finalD = den / g;
+
+    return {
+        q: `გამოთვალეთ: $\\frac{${n1}}{${d1}} : \\frac{${n2}}{${d2}}$`,
+        a: finalD === 1 ? `$${finalN}$` : `$$\\frac{${finalN}}{${finalD}}$$`
+    };
+}
+
+// 17. შერეული რიცხვების გამრავლება და გაყოფა
+function genMixedMultDiv() {
+    const w1 = getRandomInt(1, 4);
+    const w2 = getRandomInt(1, 4);
+    const d1 = getRandomInt(2, 5);
+    const d2 = getRandomInt(2, 5);
+    const n1 = getRandomInt(1, d1 - 1);
+    const n2 = getRandomInt(1, d2 - 1);
+
+    const isMult = Math.random() > 0.5;
+    const top1 = w1 * d1 + n1;
+    const top2 = w2 * d2 + n2;
+
+    const num = isMult ? top1 * top2 : top1 * d2;
+    const den = isMult ? d1 * d2 : d1 * top2;
+
+    const g = gcd(num, den);
+    const finalN = num / g;
+    const finalD = den / g;
+
+    const op = isMult ? '\\cdot' : ':';
+    
+    const ansW = Math.floor(finalN / finalD);
+    const ansRem = finalN % finalD;
+    
+    let ansStr = `$${ansW}$`;
+    if (ansRem > 0) {
+        ansStr = ansW > 0 ? `$$${ansW}\\frac{${ansRem}}{${finalD}}$$` : `$$\\frac{${ansRem}}{${finalD}}$$`;
+    }
+
+    return {
+        q: `გამოთვალეთ: $${w1}\\frac{${n1}}{${d1}} ${op} ${w2}\\frac{${n2}}{${d2}}$`,
+        a: ansStr
+    };
+}
+
+// 18. ათწილადების შეკრება და გამოკლება
+function genDecimalAddSub() {
+    const isAdd = Math.random() > 0.5;
+    const a = (getRandomInt(10, 999) / 100).toFixed(2);
+    let b = (getRandomInt(10, 999) / 100).toFixed(2);
+
+    if (!isAdd && parseFloat(a) < parseFloat(b)) {
+        return genDecimalAddSub();
+    }
+
+    const res = isAdd ? (parseFloat(a) + parseFloat(b)).toFixed(2) : (parseFloat(a) - parseFloat(b)).toFixed(2);
+    const op = isAdd ? '+' : '-';
+
+    return {
+        q: `გამოთვალეთ ქვეშმიწერით: $${a} ${op} ${b}$`,
+        a: `$${res}$`
+    };
+}
+
+// 19. ათწილადების გამრავლება
+function genDecimalMult() {
+    const a = (getRandomInt(11, 99) / 10).toFixed(1);
+    const b = (getRandomInt(11, 99) / 10).toFixed(1);
+    const res = (parseFloat(a) * parseFloat(b)).toFixed(2);
+
+    return {
+        q: `გამოთვალეთ ქვეშმიწერით: $${a} \\cdot ${b}$`,
+        a: `$${res}$`
+    };
+}
+
+// 20. ათწილადების გაყოფა
+function genDecimalDiv() {
+    const b = getRandomInt(2, 8);
+    const res = (getRandomInt(11, 99) / 10).toFixed(1);
+    const a = (parseFloat(res) * b).toFixed(1);
+
+    return {
+        q: `გამოთვალეთ ქვეშმიწერით: $${a} : ${b}$`,
+        a: `$${res}$`
+    };
+}
+
+// 21. მოქმედებათა თანმიმდევრობა
+function genOrderOperations() {
+    const a = getRandomInt(2, 9);
+    const b = getRandomInt(2, 9);
+    const c = getRandomInt(2, 9);
+    const d = getRandomInt(2, 9);
+
+    const type = getRandomInt(1, 2);
+    let qStr = "";
+    let ans = 0;
+
+    if (type === 1) {
+        qStr = `$${a} + ${b} \\cdot (${c} + ${d})$`;
+        ans = a + b * (c + d);
+    } else {
+        qStr = `$(${a} + ${b}) \\cdot ${c} - ${d}$`;
+        ans = (a + b) * c - d;
+    }
+
+    return {
+        q: `გამოთვალეთ გამოსახულების მნიშვნელობა მოქმედებათა თანმიმდევრობის დაცვით: ${qStr}`,
+        a: `$${ans}$`
+    };
+}
+
+// 22. ათობითიდან ორობითში გადაყვანა
+function genDecToBin() {
+    const num = getRandomInt(5, 50);
+    const bin = num.toString(2);
+
+    return {
+        q: `გადაიყვანეთ რიცხვი $${num}_{10}$ ორობით სისტემაში:`,
+        a: `$${bin}_2$`
+    };
+}
+
+// 23. ორობითიდან ათობითში გადაყვანა
+function genBinToDec() {
+    const num = getRandomInt(5, 50);
+    const bin = num.toString(2);
+
+    return {
+        q: `გადაიყვანეთ რიცხვი $${bin}_2$ ათობით სისტემაში:`,
+        a: `$${num}_{10}$`
+    };
 }
 
 
