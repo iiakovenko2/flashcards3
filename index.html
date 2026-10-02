@@ -74,6 +74,11 @@
         <button onclick="openSkillsModal()" class="menu-item-btn secondary" style="display: flex; align-items: center; gap: 12px; width: 100%; padding: 12px 15px; border: none; border-radius: 12px; background-color: transparent; color: var(--text-primary); font-weight: 500; font-size: 1rem; cursor: pointer; text-align: left; box-sizing: border-box;">
             <span style="font-size: 1.15rem;">⚡</span> არითმეტიკული უნარები
         </button>
+        
+        <!-- ალგებრული უნარების ღილაკი სიდბარში -->
+        <button onclick="openAlgebraSkillsModal()" class="menu-item-btn secondary" style="display: flex; align-items: center; gap: 12px; width: 100%; padding: 12px 15px; border: none; border-radius: 12px; background-color: transparent; color: var(--text-primary); font-weight: 500; font-size: 1rem; cursor: pointer; text-align: left; box-sizing: border-box;">
+        <span style="font-size: 1.15rem;">📐</span> ალგებრული უნარები
+        </button>
     </nav>
 
     <div style="font-size: 0.8rem; text-align: center; color: #a0aec0; padding-top: 15px; border-top: 1px solid var(--border-color, #e2e8f0);">
@@ -280,6 +285,56 @@
             </div>
         </div>
     </div>
+    
+    <!-- ალგებრული სავარჯიშოების მოდალი -->
+    <div id="algebra-skills-modal" class="modal">
+    <div class="modal-content" style="border-top: 5px solid #8e44ad; max-width: 500px;">
+        <span class="close-btn" onclick="closeAlgebraSkillsModal()">&times;</span>
+        <h3 style="margin-top: 0; color: var(--text-primary, #2c3e50);">📐 ალგებრული სავარჯიშოები</h3>
+        <hr>
+        
+        <div style="margin-bottom: 15px;">
+            <label for="algebra-skill-select" style="display: block; font-weight: bold; margin-bottom: 8px; color: var(--text-primary, #2c3e50);">აირჩიეთ უნარი:</label>
+            <select id="algebra-skill-select" style="width: 100%; padding: 10px; border-radius: 8px; border: 1px solid var(--border-color, #ccc); background-color: var(--bg-card, #fff); color: var(--text-primary, #000); font-size: 0.95rem;">
+                <optgroup label="წრფივი განტოლებები და უტოლობები">
+                    <option value="oneStepEq">1. ერთმოქმედებიანი წრფივი განტოლების ამოხსნა</option>
+                    <option value="twoStepEq">2. ორმოქმედებიანი წრფივი განტოლების ამონახსნა</option>
+                    <option value="varsBothSides">3. განტოლება ცვლადით ტოლობის ორივე მხარეს</option>
+                    <option value="linearInequality">4. წრფივი უტოლობის ამოხსნა</option>
+                </optgroup>
+                <optgroup label="მრავალწევრები და გამოსახულებები">
+                    <option value="evalExpression">5. ალგებრული გამოსახულების მნიშვნელობის გამოთვლა</option>
+                    <option value="combineLikeTerms">6. მსგავსი წევრების შეკრება/გამრავლება</option>
+                    <option value="expandBinomials">7. ორწევრების ნამრავლი </option>
+                    <option value="squareBinomial">8. ორწევრის კვადრატი </option>
+                    <option value="diffSquares">9. კვადრატების სხვაობა </option>
+                </optgroup>
+                <optgroup label="მამრავლებად დაშლა ">
+                    <option value="factorGCF">10. საერთო მამრავლის ფრჩხილებს გარეთ გატანა</option>
+                    <option value="factorQuadraticSimple">11. კვადრატული სამწევრის დაშლა მამრავლებად</option>
+                    <option value="factorDiffSquares">12. კვადრატების სხვაობის დაშლა</option>
+                </optgroup>
+                <optgroup label="კვადრატული განტოლებები და სისტემები">
+                    <option value="solveQuadraticFactoring">13. კვადრატული განტოლების ამოხსნა მამრავლებად დაშლით</option>
+                    <option value="quadraticFormula">14. კვადრატული განტოლების ამოხსნა დისკრიმინანტით</option>
+                    <option value="system2x2">15. წრფივ ორუცნობიან განტოლებათა სისტემა</option>
+                </optgroup>
+            </select>
+        </div>
+
+        <button onclick="generateNewAlgebraTask()" class="category-btn" style="width: 100%; padding: 12px; background-color: #8e44ad; color: white; border: none; border-radius: 8px; font-weight: bold; cursor: pointer; font-size: 1rem;">
+            🎲 ამოცანის გენერირება
+        </button>
+
+        <div id="alg-gen-task-display" style="display: none; margin-top: 20px; padding: 15px; border-radius: 10px; background-color: var(--bg-card, #f8fafc); border: 1px solid var(--border-color, #e2e8f0); text-align: center;">
+            <div id="alg-gen-task-q" style="font-size: 1.2rem; font-weight: bold; margin-bottom: 15px; color: var(--text-primary, #1e293b);"></div>
+            <button id="alg-gen-ans-toggle-btn" onclick="toggleAlgGenTaskAnswer()" style="background-color: #10b981; color: white; border: none; padding: 8px 16px; border-radius: 6px; font-weight: bold; cursor: pointer;">
+                👁️ პასუხის ნახვა
+            </button>
+            <div id="alg-gen-task-a" style="display: none; margin-top: 12px; padding-top: 12px; border-top: 1px dashed var(--border-color, #cbd5e1); font-size: 1.1rem; color: #27ae60; font-weight: bold;"></div>
+        </div>
+    </div>
+</div>
 
 <header>
     <div class="developer-actions" style="margin-top: 15px; display: flex; gap: 10px; justify-content: center;">

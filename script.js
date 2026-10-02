@@ -1794,6 +1794,295 @@ function genBinToDec() {
     };
 }
 
+// ==========================================
+// ალგებრული უნარების გენერატორი
+// ==========================================
+
+function openAlgebraSkillsModal() {
+    toggleSidebar(false);
+    document.getElementById('algebra-skills-modal').style.display = 'flex';
+}
+
+function closeAlgebraSkillsModal() {
+    document.getElementById('algebra-skills-modal').style.display = 'none';
+}
+
+function toggleAlgGenTaskAnswer() {
+    const ansEl = document.getElementById('alg-gen-task-a');
+    const btnEl = document.getElementById('alg-gen-ans-toggle-btn');
+    if (ansEl.style.display === 'none') {
+        ansEl.style.display = 'block';
+        btnEl.innerText = '🙈 პასუხის დამალვა';
+    } else {
+        ansEl.style.display = 'none';
+        btnEl.innerText = '👁️ პასუხის ნახვა';
+    }
+}
+
+function generateNewAlgebraTask() {
+    const skill = document.getElementById('algebra-skill-select').value;
+    const qEl = document.getElementById('alg-gen-task-q');
+    const aEl = document.getElementById('alg-gen-task-a');
+    const displayBox = document.getElementById('alg-gen-task-display');
+    const btnEl = document.getElementById('alg-gen-ans-toggle-btn');
+
+    aEl.style.display = 'none';
+    btnEl.innerText = '👁️ პასუხის ნახვა';
+
+    const task = generateAlgebraSkillTask(skill);
+    qEl.innerHTML = task.q;
+    aEl.innerHTML = task.a;
+
+    displayBox.style.display = 'block';
+
+    if (window.renderMathInElement) {
+        renderMathInElement(displayBox, {
+            delimiters: [
+                {left: "$$", right: "$$", display: true},
+                {left: "$", right: "$", display: false}
+            ],
+            throwOnError: false
+        });
+    }
+}
+
+function generateAlgebraSkillTask(skill) {
+    switch (skill) {
+        case 'oneStepEq': return genOneStepEq();
+        case 'twoStepEq': return genTwoStepEq();
+        case 'varsBothSides': return genVarsBothSides();
+        case 'linearInequality': return genLinearInequality();
+        case 'evalExpression': return genEvalExpression();
+        case 'expandBinomials': return genExpandBinomials();
+        case 'squareBinomial': return genSquareBinomial();
+        case 'diffSquares': return genDiffSquares();
+        case 'factorGCF': return genFactorGCF();
+        case 'factorQuadraticSimple': return genFactorQuadraticSimple();
+        case 'solveQuadraticFactoring': return genSolveQuadraticFactoring();
+        case 'quadraticFormula': return genQuadraticFormula();
+        case 'system2x2': return genSystem2x2();
+        default:
+            return { q: "გენერატორი მზადდება...", a: "" };
+    }
+}
+
+// ------------------------------------------
+// ალგებრული უნარების კონკრეტული ფუნქციები
+// ------------------------------------------
+
+// 1. ერთნაბიჯიანი წრფივი განტოლება
+function genOneStepEq() {
+    const a = getRandomInt(2, 9);
+    const x = getRandomInt(-10, 10);
+    const b = a * x;
+    return {
+        q: `ამოხსენით განტოლება: $${a}x = ${b}$`,
+        a: `$x = ${x}$`
+    };
+}
+
+// 2. ორნაბიჯიანი წრფივი განტოლება
+function genTwoStepEq() {
+    const a = getRandomInt(2, 8);
+    const x = getRandomInt(-9, 9);
+    const c = getRandomInt(-15, 15);
+    const b = a * x + c;
+    const sign = c >= 0 ? `+ ${c}` : `- ${Math.abs(c)}`;
+    return {
+        q: `ამოხსენით განტოლება: $${a}x ${sign} = ${b}$`,
+        a: `$x = ${x}$`
+    };
+}
+
+// 3. განტოლება ცვლადით ორსავე მხარეს
+function genVarsBothSides() {
+    const x = getRandomInt(-8, 8);
+    const a = getRandomInt(4, 9);
+    let c = getRandomInt(1, 3);
+    const b = getRandomInt(-10, 10);
+    const d = (a - c) * x + b;
+    
+    const signB = b >= 0 ? `+ ${b}` : `- ${Math.abs(b)}`;
+    const signD = d >= 0 ? `+ ${d}` : `- ${Math.abs(d)}`;
+
+    return {
+        q: `ამოხსენით განტოლება: $${a}x ${signB} = ${c}x ${signD}$`,
+        a: `$x = ${x}$`
+    };
+}
+
+// 4. წრფივი უტოლობის ამოხსნა
+function genLinearInequality() {
+    const a = getRandomInt(-5, 5);
+    if (a === 0) return genLinearInequality();
+    const x = getRandomInt(-6, 6);
+    const b = getRandomInt(-10, 10);
+    const c = a * x + b;
+    
+    const ops = ['>', '<', '\\ge', '\\le'];
+    const op = ops[getRandomInt(0, 3)];
+
+    // თუ a < 0, უტოლობის ნიშანი იცვლება
+    let ansOp = op;
+    if (a < 0) {
+        if (op === '>') ansOp = '<';
+        else if (op === '<') ansOp = '>';
+        else if (op === '\\ge') ansOp = '\\le';
+        else if (op === '\\le') ansOp = '\\ge';
+    }
+
+    const signB = b >= 0 ? `+ ${b}` : `- ${Math.abs(b)}`;
+
+    return {
+        q: `ამოხსენით უტოლობა: $${a}x ${signB} ${op} ${c}$`,
+        a: `$x ${ansOp} ${x}$`
+    };
+}
+
+// 5. ალგებრული გამოსახულების მნიშვნელობა
+function genEvalExpression() {
+    const x = getRandomInt(-4, 5);
+    const a = getRandomInt(2, 5);
+    const b = getRandomInt(-6, 6);
+    const c = getRandomInt(-10, 10);
+    
+    const res = a * x * x + b * x + c;
+    const signB = b >= 0 ? `+ ${b}x` : `- ${Math.abs(b)}x`;
+    const signC = c >= 0 ? `+ ${c}` : `- ${Math.abs(c)}`;
+
+    return {
+        q: `იპოვეთ $${a}x^2 ${signB} ${signC}$ გამოსახულების მნიშვნელობა, როცა $x = ${x}$:`,
+        a: `$${res}$`
+    };
+}
+
+// 7. ორწევრების ნამრავლი (FOIL)
+function genExpandBinomials() {
+    const m = getRandomInt(-6, 6);
+    const n = getRandomInt(-6, 6);
+    if (m === 0 || n === 0) return genExpandBinomials();
+
+    const b = m + n;
+    const c = m * n;
+
+    const signM = m > 0 ? `+ ${m}` : `- ${Math.abs(m)}`;
+    const signN = n > 0 ? `+ ${n}` : `- ${Math.abs(n)}`;
+    const signB = b > 0 ? `+ ${b}x` : (b < 0 ? `- ${Math.abs(b)}x` : '');
+    const signC = c > 0 ? `+ ${c}` : `- ${Math.abs(c)}`;
+
+    return {
+        q: `გახსენით ფრჩხილები: $(x ${signM})(x ${signN})$`,
+        a: `$x^2 ${signB} ${signC}$`
+    };
+}
+
+// 8. ორწევრის კვადრატი
+function genSquareBinomial() {
+    const a = getRandomInt(2, 6);
+    const isPlus = Math.random() > 0.5;
+    const sign = isPlus ? '+' : '-';
+    
+    const mid = 2 * a;
+    const sq = a * a;
+
+    return {
+        q: `გაშალეთ ფორმულის გამოყენებით: $(x ${sign} ${a})^2$`,
+        a: `$x^2 ${sign} ${mid}x + ${sq}$`
+    };
+}
+
+// 9. კვადრატების სხვაობა
+function genDiffSquares() {
+    const a = getRandomInt(2, 10);
+    const sq = a * a;
+
+    return {
+        q: `გამოთვალეთ/ჩაწერეთ ნამრავლის სახით: $(x - ${a})(x + ${a})$`,
+        a: `$x^2 - ${sq}$`
+    };
+}
+
+// 10. საერთო მამრავლის გატანა
+function genFactorGCF() {
+    const gcf = getRandomInt(2, 6);
+    const a = getRandomInt(2, 5);
+    const b = getRandomInt(2, 5);
+    
+    const term1 = gcf * a;
+    const term2 = gcf * b;
+
+    return {
+        q: `დაშალეთ მამრავლებად (გაიტანეთ საერთო მამრავლი): $${term1}x + ${term2}$`,
+        a: `$${gcf}(${a}x + ${b})$`
+    };
+}
+
+// 11. კვადრატული სამწევრის დაშლა (x^2 + bx + c)
+function genFactorQuadraticSimple() {
+    const r1 = getRandomInt(-7, 7);
+    const r2 = getRandomInt(-7, 7);
+    if (r1 === 0 || r2 === 0) return genFactorQuadraticSimple();
+
+    const b = -(r1 + r2);
+    const c = r1 * r2;
+
+    const signB = b > 0 ? `+ ${b}x` : (b < 0 ? `- ${Math.abs(b)}x` : '');
+    const signC = c > 0 ? `+ ${c}` : `- ${Math.abs(c)}`;
+
+    const sign1 = r1 > 0 ? `- ${r1}` : `+ ${Math.abs(r1)}`;
+    const sign2 = r2 > 0 ? `- ${r2}` : `+ ${Math.abs(r2)}`;
+
+    return {
+        q: `დაშალეთ მამრავლებად: $x^2 ${signB} ${signC}$`,
+        a: `$(x ${sign1})(x ${sign2})$`
+    };
+}
+
+// 13. კვადრატული განტოლება დაშლით
+function genSolveQuadraticFactoring() {
+    const x1 = getRandomInt(-6, 6);
+    let x2 = getRandomInt(-6, 6);
+    while (x1 === x2) x2 = getRandomInt(-6, 6);
+
+    const b = -(x1 + x2);
+    const c = x1 * x2;
+
+    const signB = b > 0 ? `+ ${b}x` : (b < 0 ? `- ${Math.abs(b)}x` : '');
+    const signC = c > 0 ? `+ ${c}` : `- ${Math.abs(c)}`;
+
+    return {
+        q: `ამოხსენით განტოლება: $x^2 ${signB} ${signC} = 0$`,
+        a: `$x_1 = ${x1}, \\quad x_2 = ${x2}$`
+    };
+}
+
+// 14. კვადრატული განტოლება დისკრიმინანტით
+function genQuadraticFormula() {
+    return genSolveQuadraticFactoring(); // იგივე ლოგიკა გამოიყენება სუფთა ფესვებისთვის
+}
+
+// 15. 2x2 განტოლებათა სისტემა
+function genSystem2x2() {
+    const x = getRandomInt(-5, 5);
+    const y = getRandomInt(-5, 5);
+
+    const a1 = getRandomInt(1, 4);
+    const b1 = getRandomInt(1, 4);
+    const c1 = a1 * x + b1 * y;
+
+    const a2 = getRandomInt(1, 4);
+    const b2 = -getRandomInt(1, 4);
+    const c2 = a2 * x + b2 * y;
+
+    const signB1 = b1 > 0 ? `+ ${b1}y` : `- ${Math.abs(b1)}y`;
+    const signB2 = b2 > 0 ? `+ ${b2}y` : `- ${Math.abs(b2)}y`;
+
+    return {
+        q: `ამოხსენით სისტემა: $$\\begin{cases} ${a1}x ${signB1} = ${c1} \\\\ ${a2}x ${signB2} = ${c2} \\end{cases}$$`,
+        a: `$x = ${x}, \\quad y = ${y}$`
+    };
+}
+
 
 
 // 7. AUTOMATED FILE DATA INITIALIZATION TRIGGER
